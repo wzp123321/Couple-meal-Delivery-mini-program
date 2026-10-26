@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>情侣带饭 · 温暖奶油风高保真原型</title>
+<style>
+  :root{
+    --cream-bg:#FFF9F2;          /* 奶油白底 */
+    --cream-bg-2:#FFFCF8;
+    --card:#FFFFFF;
+    --peach:#FFC9B0;             /* 蜜桃粉 */
+    --peach-soft:#FFE3D6;
+    --orange:#FF9B6A;            /* 暖橘（主强调） */
+    --orange-deep:#F47B45;
+    --ink:#4A3F35;              /* 深褐文字 */
+    --ink-2:#8C7B6B;            /* 次要文字 */
+    --ink-3:#B9AB9C;
+    --line:#F1E7DD;
+    --warn:#FF6B6B;             /* 忌口强提醒（克制使用） */
+    --warn-soft:#FFE3E0;
+    --gold:#F2B66B;             /* 爱心值/徽章 */
+    --shadow:0 6px 20px rgba(255,155,106,.14);
+    --shadow-sm:0 2px 8px rgba(74,63,53,.06);
+    --r:22px;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{
+    margin:0;font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+    background:#F3E9DF;display:flex;justify-content:center;align-items:flex-start;
+    min-height:100vh;padding:24px;color:var(--ink);
+  }
+  .phone{
+    width:390px;background:var(--cream-bg);border-radius:42px;
+    box-shadow:0 20px 60px rgba(74,63,53,.22);overflow:hidden;
+    position:relative;border:10px solid #2b2420;
+  }
+  .statusbar{
+    height:44px;display:flex;justify-content:space-between;align-items:center;
+    padding:0 22px;font-size:13px;font-weight:600;color:var(--ink);
+    background:linear-gradient(180deg,#FFFCF8,#FFF4EC);
+  }
+  .statusbar .icons{letter-spacing:2px;font-size:12px;}
+  .screen{height:740px;overflow:hidden;position:relative;background:var(--cream-bg);}
+  .page{position:absolute;inset:0;display:none;flex-direction:column;
+    padding:0 0 76px;overflow-y:auto;}
+  .page.active{display:flex;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .ptitle{font-size:22px;font-weight:800;padding:14px 20px 6px;}
+  .psub{font-size:13px;color:var(--ink-2);padding:0 20px 10px;}
+
+  /* ---------- 关系卡 ---------- */
+  .relcard{margin:8px 16px 4px;background:linear-gradient(135deg,#FFF,#FFF1E8);
+    border-radius:var(--r);padding:16px;box-shadow:var(--shadow);text-align:center;}
+  .avatars{display:flex;justify-content:center;align-items:center;gap:10px;}
+  .avatar{width:54px;height:54px;border-radius:50%;background:var(--peach-soft);
+    display:flex;align-items:center;justify-content:center;font-size:26px;
+    border:3px solid #fff;box-shadow:var(--shadow-sm);}
+  .heart-badge{font-size:18px;color:var(--orange);}
+  .rel-name{font-weight:800;margin-top:8px;font-size:15px;}
+  .rel-meta{font-size:12px;color:var(--ink-2);margin-top:4px;}
+  .love-pill{display:inline-flex;align-items:center;gap:4px;margin-top:10px;
+    background:linear-gradient(135deg,var(--orange),var(--gold));color:#fff;
+    font-weight:700;font-size:13px;padding:6px 14px;border-radius:20px;
+    box-shadow:0 4px 12px rgba(255,155,106,.3);}
+
+  /* ---------- 约定卡 ---------- */
+  .block-h{font-size:14px;font-weight:700;color:var(--ink-2);
+    padding:14px 20px 4px;display:flex;justify-content:space-between;align-items:center;}
+  .plan{margin:8px 16px;background:var(--card);border-radius:var(--r);
+    padding:14px;box-shadow:var(--shadow-sm);}
+  .plan-top{display:flex;justify-content:space-between;align-items:center;}
+  .plan-who{font-weight:700;font-size:14px;}
+  .tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px;}
+  .tag-wait{background:var(--peach-soft);color:var(--orange-deep);}
+  .tag-done{background:#EAF7EC;color:#3FA866;}
+  .plan-dish{margin-top:8px;font-size:14px;}
+  .plan-remark{margin-top:4px;font-size:12px;color:var(--ink-2);}
+  .plan-actions{margin-top:12px;display:flex;gap:10px;}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+  .chip{background:var(--peach-soft);color:var(--orange-deep);font-size:12px;
+    padding:5px 11px;border-radius:14px;font-weight:600;}
+
+  /* ---------- 按钮 ---------- */
+  .btn{border:none;border-radius:16px;font-weight:700;font-size:15px;
+    padding:13px;cursor:pointer;font-family:inherit;transition:.15s;}
+  .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-deep));
+    color:#fff;box-shadow:0 6px 16px rgba(255,155,106,.35);flex:1;}
+  .btn-primary:active{transform:scale(.97);}
+  .btn-ghost{background:#fff;color:var(--orange-deep);border:1.5px solid var(--peach);flex:1;}
+  .btn-ghost:active{transform:scale(.97);}
+  .btn-sm{padding:9px 14px;font-size:13px;border-radius:13px;}
+
+  /* ---------- 底部 Tab ---------- */
+  .tabbar{position:absolute;left:0;right:0;bottom:0;height:66px;background:#fff;
+    display:flex;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(74,63,53,.05);}
+  .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    gap:3px;color:var(--ink-3);font-size:11px;cursor:pointer;font-weight:600;}
+  .tab .ic{font-size:21px;}
+  .tab.active{color:var(--orange);}
+
+  /* ---------- 表单页 ---------- */
+  .field{margin:10px 16px;background:#fff;border-radius:var(--r);padding:14px;
+    box-shadow:var(--shadow-sm);}
+  .field label{font-size:13px;font-weight:700;color:var(--ink-2);display:block;margin-bottom:8px;}
+  .seg{display:flex;background:var(--peach-soft);border-radius:14px;padding:4px;gap:4px;}
+  .seg div{flex:1;text-align:center;padding:9px;border-radius:11px;font-weight:700;
+    font-size:13px;color:var(--ink-2);cursor:pointer;}
+  .seg div.on{background:#fff;color:var(--orange-deep);box-shadow:var(--shadow-sm);}
+  .ta{width:100%;border:none;background:var(--cream-bg);border-radius:12px;
+    padding:10px;font-size:14px;resize:none;font-family:inherit;color:var(--ink);}
+  .picker{display:flex;align-items:center;justify-content:space-between;
+    background:var(--cream-bg);border-radius:12px;padding:12px;cursor:pointer;}
+  .picker .ph{color:var(--ink-3);font-size:14px;}
+
+  /* ---------- 详情进度 ---------- */
+  .steps{display:flex;justify-content:space-between;margin:16px;position:relative;}
+  .steps::before{content:"";position:absolute;top:13px;left:10%;right:10%;height:3px;
+    background:var(--line);}
+  .step{display:flex;flex-direction:column;align-items:center;gap:6px;z-index:1;width:25%;}
+  .dot{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--line);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--ink-3);}
+  .step.on .dot{background:linear-gradient(135deg,var(--orange),var(--gold));border-color:transparent;color:#fff;}
+  .step .st{font-size:10px;color:var(--ink-3);}
+  .step.on .st{color:var(--orange-deep);font-weight:700;}
+  .toggle{display:flex;justify-content:center;margin:6px 16px 0;}
+  .toggle .seg{max-width:240px;}
+  .note{margin:12px 16px;background:var(--peach-soft);border-radius:16px;padding:12px;
+    font-size:13px;color:var(--orange-deep);}
+  .note .from{font-weight:700;}
+
+  /* ---------- 菜单库 ---------- */
+  .filters{display:flex;gap:8px;overflow-x:auto;padding:6px 16px;margin-bottom:4px;}
+  .filters .f{flex:none;background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:7px 13px;font-size:12px;font-weight:600;color:var(--ink-2);cursor:pointer;}
+  .filters .f.on{background:var(--peach-soft);color:var(--orange-deep);border-color:var(--peach);}
+  .dish{margin:8px 16px;background:#fff;border-radius:18px;padding:13px 14px;
+    box-shadow:var(--shadow-sm);display:flex;justify-content:space-between;align-items:center;}
+  .dish .nm{font-weight:700;font-size:14px;}
+  .dish .cat{font-size:11px;color:var(--ink-3);margin-top:2px;}
+  .marks{display:flex;gap:5px;}
+  .mk{font-size:11px;font-weight:700;padding:3px 8px;border-radius:10px;}
+  .mk-star{background:#FFF3D6;color:var(--gold);}
+  .mk-avoid{background:var(--warn-soft);color:var(--warn);}
+  .fab{position:absolute;right:18px;bottom:84px;width:56px;height:56px;border-radius:50%;
+    background:linear-gradient(135deg,var(--orange),var(--orange-deep));color:#fff;
+    font-size:26px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 8px 20px rgba(255,155,106,.4);cursor:pointer;}
+
+  /* ---------- 消息 ---------- */
+  .msg{margin:8px 16px;background:#fff;border-radius:16px;padding:13px;
+    box-shadow:var(--shadow-sm);display:flex;gap:12px;align-items:flex-start;cursor:pointer;}
+  .msg .mi{width:38px;height:38px;border-radius:12px;background:var(--peach-soft);
+    display:flex;align-items:center;justify-content:center;font-size:19px;flex:none;}
+  .msg .mt{font-weight:700;font-size:13px;}
+  .msg .md{font-size:12px;color:var(--ink-2);margin-top:3px;}
+  .reddot{width:8px;height:8px;border-radius:50%;background:var(--warn);display:inline-block;margin-left:6px;}
+
+  /* ---------- 我的 ---------- */
+  .me-head{margin:10px 16px;background:linear-gradient(135deg,#FFF,#FFF1E8);
+    border-radius:var(--r);padding:18px;display:flex;align-items:center;gap:14px;box-shadow:var(--shadow);}
+  .me-name{font-weight:800;font-size:17px;}
+  .me-sub{font-size:12px;color:var(--ink-2);margin-top:3px;}
+  .mrow{margin:8px 16px;background:#fff;border-radius:16px;padding:14px;
+    box-shadow:var(--shadow-sm);display:flex;justify-content:space-between;align-items:center;
+    font-size:14px;font-weight:600;cursor:pointer;}
+  .mrow .r{color:var(--ink-3);}
+
+  /* ---------- 周历 ---------- */
+  .week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:8px 12px;}
+  .wday{background:#fff;border-radius:14px;padding:10px 4px;text-align:center;
+    box-shadow:var(--shadow-sm);}
+  .wday .d{font-size:11px;color:var(--ink-3);}
+  .wday .who{font-size:11px;font-weight:700;margin-top:6px;padding:4px 0;border-radius:9px;}
+  .w-a{background:var(--peach-soft);color:var(--orange-deep);}
+  .w-b{background:#E7F0FF;color:#5B82D6;}
+  .w-none{background:var(--cream-bg);color:var(--ink-3);}
+
+  /* ---------- 报告 ---------- */
+  .report{margin:10px 16px;background:linear-gradient(135deg,#FFF,#FFF3E6);
+    border-radius:var(--r);padding:18px;box-shadow:var(--shadow);}
+  .report h3{margin:0 0 10px;font-size:16px;}
+  .rbars{display:flex;gap:14px;align-items:flex-end;height:120px;margin:14px 0;}
+  .rbar{flex:1;background:var(--peach-soft);border-radius:10px 10px 0 0;position:relative;}
+  .rbar.b{background:#E7F0FF;}
+  .rbar span{position:absolute;bottom:-22px;left:0;right:0;text-align:center;font-size:11px;color:var(--ink-2);}
+
+  /* ---------- modal ---------- */
+  .modal{position:absolute;inset:0;background:rgba(74,63,53,.4);display:none;
+    align-items:flex-end;z-index:50;}
+  .modal.active{display:flex;animation:fade .2s;}
+  .sheet{background:#fff;width:100%;border-radius:26px 26px 0 0;padding:18px 16px 24px;
+    max-height:80%;overflow-y:auto;}
+  .sheet h3{margin:0 0 12px;font-size:17px;font-weight:800;}
+  .mlist{display:flex;flex-direction:column;gap:8px;}
+  .mitem{display:flex;justify-content:space-between;align-items:center;padding:12px;
+    background:var(--cream-bg);border-radius:14px;cursor:pointer;font-weight:600;font-size:14px;}
+  .mitem.sel{background:var(--peach-soft);}
+  .avoid-warn{margin:10px 0;background:var(--warn-soft);color:var(--warn);font-size:12px;
+    font-weight:700;padding:10px 12px;border-radius:12px;display:none;}
+  .avoid-warn.show{display:block;}
+
+  .float-actions{position:absolute;left:16px;right:16px;bottom:84px;display:flex;gap:12px;}
+  .mini-tag{font-size:11px;background:var(--peach-soft);color:var(--orange-deep);
+    padding:2px 8px;border-radius:10px;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span class="icons">●●● 🛜 🔋</span>
+  </div>
+  <div class="screen">
+
+    <!-- ============ 今日约定 ============ -->
+    <section class="page active" id="p-today">
+      <div class="ptitle">今日约定</div>
+      <div class="relcard">
+        <div class="avatars">
+          <div class="avatar">🐰</div>
+          <div class="heart-badge">💞</div>
+          <div class="avatar">🐻</div>
+        </div>
+        <div class="rel-name">宝宝 & 老板</div>
+        <div class="rel-meta">在一起 128 天 · 今天周一</div>
+        <div class="love-pill">❤ 总爱心值 42</div>
+      </div>
+
+      <div class="block-h">今天 <span class="mini-tag">待认领 1</span></div>
+      <div class="plan">
+        <div class="plan-top">
+          <div class="plan-who">🐰 宝宝 想吃</div>
+          <div class="tag tag-wait">待认领</div>
+        </div>
+        <div class="plan-dish">红烧肉 · 番茄蛋汤</div>
+        <div class="plan-remark">少辣～公司门口等我 🥺</div>
+        <div class="plan-actions">
+          <button class="btn btn-primary btn-sm" onclick="goDetail('carry')">我来带 🛍</button>
+          <button class="btn btn-ghost btn-sm" onclick="goDetail('order')">看详情</button>
+        </div>
+      </div>
+
+      <div class="block-h">最近</div>
+      <div class="plan">
+        <div class="plan-top">
+          <div class="plan-who">🐻 老板 带了</div>
+          <div class="tag tag-done">已完成 ❤+1</div>
+        </div>
+        <div class="plan-dish">糖醋排骨 · 米饭</div>
+        <div class="plan-remark">便签：趁热吃，爱你好不好 ❤</div>
+      </div>
+
+      <div class="float-actions">
+        <button class="btn btn-ghost" onclick="show('p-create-order')">🍚 我想吃</button>
+        <button class="btn btn-primary" onclick="show('p-create-carry')">🛍 我带饭</button>
+      </div>
+    </section>
+
+    <!-- ============ 发起-点餐方 ============ -->
+    <section class="page" id="p-create-order">
+      <div class="ptitle">我想吃 😋</div>
+      <div class="psub">告诉 TA 今天想被投喂什么</div>
+      <div class="field">
+        <label>想吃的菜</label>
+        <div class="picker" onclick="openMenu()">
+          <span id="orderPick" class="ph">从菜单选 / 自由填…</span>
+          <span>›</span>
+        </div>
+        <div class="chips" id="orderChips"></div>
+      </div>
+      <div class="field">
+        <label>时段</label>
+        <div class="seg">
+          <div class="on">🍱 午饭</div>
+          <div style="color:var(--ink-3)">🌙 晚饭（二期）</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>口味 / 备注</label>
+        <textarea class="ta" rows="3" placeholder="少辣、公司门口、想加个汤…">少辣，公司门口等我～</textarea>
+      </div>
+      <div style="padding:0 16px 10px">
+        <button class="btn btn-primary" onclick="submitOrder()">发出约定 💌</button>
+      </div>
+    </section>
+
+    <!-- ============ 发起-带饭方 ============ -->
+    <section class="page" id="p-create-carry">
+      <div class="ptitle">我带饭 🛍</div>
+      <div class="psub">主动给 TA 带一份，TA 确认后生效</div>
+      <div class="field">
+        <label>带什么</label>
+        <div class="picker" onclick="openMenu()">
+          <span id="carryPick" class="ph">从菜单选 / 自由填…</span>
+          <span>›</span>
+        </div>
+        <div class="chips" id="carryChips"></div>
+      </div>
+      <div class="field">
+        <label>时段</label>
+        <div class="seg">
+          <div class="on">🍱 午饭</div>
+          <div style="color:var(--ink-3)">🌙 晚饭（二期）</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>想对 TA 说</label>
+        <textarea class="ta" rows="3" placeholder="今天给你带了爱吃的～">给你带了爱吃的红烧肉，记得下楼拿 ❤</textarea>
+      </div>
+      <div style="padding:0 16px 10px">
+        <button class="btn btn-primary" onclick="submitCarry()">提交 · 待 TA 接收</button>
+      </div>
+    </section>
+
+    <!-- ============ 约定详情 ============ -->
+    <section class="page" id="p-detail">
+      <div class="ptitle" id="detailTitle">约定详情</div>
+      <div class="plan" style="margin-top:6px">
+        <div class="plan-top">
+          <div class="plan-who" id="detailWho">🐰 宝宝 想吃</div>
+          <div class="tag tag-wait" id="detailStatus">备餐中</div>
+        </div>
+        <div class="plan-dish" id="detailDish">红烧肉 · 番茄蛋汤</div>
+        <div class="plan-remark" id="detailRemark">少辣～公司门口等我 🥺</div>
+      </div>
+
+      <div class="steps" id="steps">
+        <div class="step on"><div class="dot">1</div><div class="st">待认领</div></div>
+        <div class="step on"><div class="dot">2</div><div class="st">备餐中</div></div>
+        <div class="step"><div class="dot">3</div><div class="st">已送达</div></div>
+        <div class="step"><div class="dot">4</div><div class="st">已完成</div></div>
+      </div>
+
+      <div class="toggle">
+        <div class="seg" style="background:var(--peach-soft)">
+          <div id="t-carry" class="on" onclick="switchView('carry')">带饭方视角</div>
+          <div id="t-order" onclick="switchView('order')">接收方视角</div>
+        </div>
+      </div>
+
+      <div id="carryActions" class="plan-actions" style="margin:14px 16px">
+        <button class="btn btn-ghost btn-sm" onclick="alert('已退回待认领（改派）')">改派</button>
+        <button class="btn btn-primary btn-sm" onclick="advance()">标记已送达 📦</button>
+      </div>
+      <div id="orderActions" class="plan-actions" style="margin:14px 16px;display:none">
+        <button class="btn btn-primary btn-sm" onclick="finish()">已领取 · 完成 ❤</button>
+      </div>
+
+      <div class="note">
+        <span class="from">🐻 老板：</span>锅里留了汤，趁热喝。下楼记得穿外套～
+        <div style="margin-top:8px;color:var(--ink-2)">🐰 宝宝 回复：爱你 ❤</div>
+      </div>
+    </section>
+
+    <!-- ============ 菜单库 ============ -->
+    <section class="page" id="p-menu">
+      <div class="ptitle">菜单库 🍽</div>
+      <div class="psub">记得彼此爱吃什么、不吃什么</div>
+      <div class="filters">
+        <div class="f on">全部</div>
+        <div class="f">常点★</div>
+        <div class="f">忌口⚠</div>
+        <div class="f">荤</div><div class="f">素</div><div class="f">汤</div><div class="f">主食</div>
+      </div>
+      <div class="dish"><div><div class="nm">红烧肉</div><div class="cat">荤 · TA爱吃</div></div>
+        <div class="marks"><span class="mk mk-star">★常点</span></div></div>
+      <div class="dish"><div><div class="nm">番茄蛋汤</div><div class="cat">汤 · 我常做</div></div>
+        <div class="marks"><span class="mk mk-star">★常点</span></div></div>
+      <div class="dish"><div><div class="nm">香菜</div><div class="cat">配菜 · TA不吃</div></div>
+        <div class="marks"><span class="mk mk-avoid">⚠忌口</span></div></div>
+      <div class="dish"><div><div class="nm">糖醋排骨</div><div class="cat">荤 · 我爱吃</div></div>
+        <div class="marks"><span class="mk mk-star">★常点</span></div></div>
+      <div class="fab" onclick="alert('打开菜品编辑弹层')">＋</div>
+    </section>
+
+    <!-- ============ 消息 ============ -->
+    <section class="page" id="p-msg">
+      <div class="ptitle">消息 💬</div>
+      <div class="msg" onclick="goDetail('carry')">
+        <div class="mi">🍚</div>
+        <div><div class="mt">宝宝 想吃什么<span class="reddot"></span></div>
+          <div class="md">红烧肉 · 番茄蛋汤 · 少辣</div></div>
+      </div>
+      <div class="msg">
+        <div class="mi">📦</div>
+        <div><div class="mt">老板 已送达<span class="reddot"></span></div>
+          <div class="md">在楼下柜B12，下来拿～</div></div>
+      </div>
+      <div class="msg">
+        <div class="mi">❤</div>
+        <div><div class="mt">约定已完成</div>
+          <div class="md">老板 获得 +1 爱心值</div></div>
+      </div>
+      <div class="msg">
+        <div class="mi">⏰</div>
+        <div><div class="mt">今日温馨提醒</div>
+          <div class="md">今天谁带饭呀？🍱</div></div>
+      </div>
+    </section>
+
+    <!-- ============ 我的 ============ -->
+    <section class="page" id="p-me">
+      <div class="ptitle">我的</div>
+      <div class="me-head">
+        <div class="avatar" style="width:60px;height:60px;font-size:30px">🐰</div>
+        <div><div class="me-name">宝宝</div><div class="me-sub">称呼：宝宝 · 在一起 128 天</div></div>
+      </div>
+      <div class="mrow" onclick="show('p-week')">📅 共同周历 <span class="r">›</span></div>
+      <div class="mrow" onclick="show('p-report')">📊 月度轻报告 <span class="r">›</span></div>
+      <div class="mrow" onclick="alert('纪念日设置')">💝 在一起纪念日 <span class="r">128 天 ›</span></div>
+      <div class="mrow" onclick="alert('主题色')">🎨 情侣主题色 <span class="r">奶油橘 ›</span></div>
+      <div class="mrow" onclick="alert('提醒开关')">🔔 提醒设置 <span class="r">›</span></div>
+      <div class="mrow" onclick="alert('解绑二次确认')">💔 解绑情侣 <span class="r">›</span></div>
+      <div class="mrow" onclick="alert('关于')">ℹ️ 关于 <span class="r">›</span></div>
+    </section>
+
+    <!-- ============ 共同周历 ============ -->
+    <section class="page" id="p-week">
+      <div class="ptitle">共同周历 📅</div>
+      <div class="psub">协商式「今天谁带」一目了然</div>
+      <div class="week">
+        <div class="wday"><div class="d">周一</div><div class="who w-a">宝宝带</div></div>
+        <div class="wday"><div class="d">周二</div><div class="who w-b">老板带</div></div>
+        <div class="wday"><div class="d">周三</div><div class="who w-a">宝宝带</div></div>
+        <div class="wday"><div class="d">周四</div><div class="who w-none">待定</div></div>
+        <div class="wday"><div class="d">周五</div><div class="who w-b">老板带</div></div>
+        <div class="wday"><div class="d">周六</div><div class="who w-none">轮流</div></div>
+        <div class="wday"><div class="d">周日</div><div class="who w-none">休息</div></div>
+      </div>
+      <div class="plan" style="margin-top:14px">
+        <div class="plan-remark">周四还没排～ 抛个硬币决定？🪙 或「今天你带还是我带」协商一下</div>
+        <div class="plan-actions">
+          <button class="btn btn-ghost btn-sm" onclick="alert('石头剪刀布 / 抛硬币')">🪙 协商谁带</button>
+          <button class="btn btn-primary btn-sm" onclick="alert('指定周四带饭人')">指定</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 月度报告 ============ -->
+    <section class="page" id="p-report">
+      <div class="ptitle">月度轻报告 📊</div>
+      <div class="psub">2026年10月 · 我们的投喂小结</div>
+      <div class="report">
+        <h3>💞 本月谁更辛苦</h3>
+        <div class="rbars">
+          <div class="rbar" style="height:84px"><span>宝宝 12</span></div>
+          <div class="rbar b" style="height:63px"><span>老板 9</span></div>
+        </div>
+        <div style="font-size:13px;color:var(--ink-2)">
+          最爱菜：红烧肉（8 次）· 连续投喂最长 9 天 · 爱心值 +21
+        </div>
+      </div>
+      <div class="report">
+        <h3>🏅 小成就</h3>
+        <div class="chips">
+          <span class="chip">连续投喂 7 天</span>
+          <span class="chip">首次亲手做</span>
+          <span class="chip">本月首席厨师·宝宝</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 菜单选择弹层 ============ -->
+    <div class="modal" id="menuModal">
+      <div class="sheet">
+        <h3>选择菜品 🍽</h3>
+        <div class="avoid-warn" id="avoidWarn">⚠ 对方不吃「香菜」，确定要加吗？</div>
+        <div class="mlist" id="menuList"></div>
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <button class="btn btn-ghost" onclick="closeMenu()">取消</button>
+          <button class="btn btn-primary" onclick="confirmMenu()">确定带回</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部 Tab -->
+  <nav class="tabbar">
+    <div class="tab active" onclick="show('p-today')"><div class="ic">🍱</div>今日约定</div>
+    <div class="tab" onclick="show('p-menu')"><div class="ic">🍽</div>菜单库</div>
+    <div class="tab" onclick="show('p-msg')"><div class="ic">💬</div>消息</div>
+    <div class="tab" onclick="show('p-me')"><div class="ic">👤</div>我的</div>
+  </nav>
+</div>
+
+<script>
+  const menuData=[
+    {n:'红烧肉',cat:'荤',avoid:false},
+    {n:'番茄蛋汤',cat:'汤',avoid:false},
+    {n:'糖醋排骨',cat:'荤',avoid:false},
+    {n:'香菜',cat:'配菜',avoid:true},
+    {n:'青椒',cat:'素',avoid:false},
+  ];
+  let picked=[]; let pickTarget='order';
+
+  function show(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    // tab 高亮
+    const map={'p-today':0,'p-menu':1,'p-msg':2,'p-me':3};
+    document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', map[id]===i));
+    document.getElementById('menuModal').classList.remove('active');
+  }
+  function goDetail(view){
+    switchView(view);
+    show('p-detail');
+  }
+  function switchView(v){
+    document.getElementById('t-carry').classList.toggle('on',v==='carry');
+    document.getElementById('t-order').classList.toggle('on',v==='order');
+    document.getElementById('carryActions').style.display = v==='carry'?'flex':'none';
+    document.getElementById('orderActions').style.display = v==='order'?'flex':'none';
+    document.getElementById('detailTitle').textContent = v==='carry'?'约定详情 · 带饭方':'约定详情 · 接收方';
+  }
+  function advance(){
+    // 备餐中 -> 已送达
+    setStep(3); document.getElementById('detailStatus').textContent='已送达';
+    document.getElementById('detailStatus').className='tag tag-wait';
+    alert('已标记送达，推送「在楼下，下来拿」给接收方');
+  }
+  function finish(){
+    setStep(4); document.getElementById('detailStatus').textContent='已完成 ❤+1';
+    document.getElementById('detailStatus').className='tag tag-done';
+    alert('约定完成，带饭方爱心值 +1');
+  }
+  function setStep(n){
+    const steps=document.querySelectorAll('#steps .step');
+    steps.forEach((s,i)=>s.classList.toggle('on', i<n));
+  }
+  function openMenu(){
+    pickTarget = (document.getElementById('p-create-order').classList.contains('active'))?'order':'carry';
+    const list=document.getElementById('menuList');
+    list.innerHTML='';
+    menuData.forEach((m,i)=>{
+      const d=document.createElement('div');
+      d.className='mitem'+(picked.includes(m.n)?' sel':'');
+      d.innerHTML='<span>'+m.n+' <span style="color:var(--ink-3);font-size:11px">'+m.cat+'</span></span>'+
+        (m.avoid?'<span class="mk mk-avoid">⚠忌口</span>':'<span style="color:var(--ink-3)">＋</span>');
+      d.onclick=()=>{
+        if(picked.includes(m.n)) picked=picked.filter(x=>x!==m.n);
+        else picked.push(m.n);
+        document.getElementById('avoidWarn').classList.toggle('show', picked.includes('香菜'));
+        openMenu();
+      };
+      list.appendChild(d);
+    });
+    document.getElementById('menuModal').classList.add('active');
+  }
+  function closeMenu(){document.getElementById('menuModal').classList.remove('active');}
+  function confirmMenu(){
+    const box = pickTarget==='order'?'orderChips':'carryChips';
+    const ph  = pickTarget==='order'?'orderPick':'carryPick';
+    document.getElementById(box).innerHTML = picked.map(p=>'<span class="chip">'+p+'</span>').join('');
+    if(picked.length) document.getElementById(ph).textContent='已选 '+picked.length+' 道';
+    closeMenu();
+  }
+  function submitOrder(){
+    alert('约定已发出 💌 → 推送给老板「宝宝想吃…」');
+    show('p-today');
+  }
+  function submitCarry(){
+    alert('已提交，待宝宝确认接收');
+    show('p-today');
+  }
+</script>
+</body>
+</html>
