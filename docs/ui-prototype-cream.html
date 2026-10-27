@@ -528,7 +528,7 @@
       <div class="field" id="reviewBlock" style="display:none">
         <label>这顿吃到了吗？拍一张记下来</label>
         <div class="checkin-cta" onclick="openCheckin()">
-          <span>📷 吃饭打卡</span><span class="r">1–3 张照片 · 说句评价 ›</span>
+          <span>📷 吃饭打卡</span><span class="r">1–2 张照片 · 说句评价 ›</span>
         </div>
       </div>
 
@@ -1101,7 +1101,7 @@
         </div>
 
         <div class="f2">
-          <label>照片（1–3 张）</label>
+          <label>照片（1–2 张）</label>
           <div class="photo-grid" id="photoGrid">
             <div class="ph"><span>🍖</span><div class="del" onclick="delPhoto(this)">✕</div></div>
             <div class="ph-add" onclick="addPhoto()">＋<small>拍 / 选</small></div>
@@ -1459,14 +1459,14 @@
   function addPhoto(){
     const grid=document.getElementById('photoGrid');
     const cur=grid.querySelectorAll('.ph').length;
-    if(cur>=3){ toast('最多 3 张哦',true); return; }
+    if(cur>=2){ toast('最多 2 张哦',true); return; }
     const add=grid.querySelector('.ph-add');
     const d=document.createElement('div');
     d.className='ph p'+((cur%3)+1);
     d.innerHTML='<span>'+ckEmoji[cur%ckEmoji.length]+'</span>'+
       '<div class="del" onclick="delPhoto(this)">✕</div>';
     grid.insertBefore(d, add);
-    if(grid.querySelectorAll('.ph').length>=3) add.style.display='none';
+    if(grid.querySelectorAll('.ph').length>=2) add.style.display='none';
   }
   function delPhoto(el){
     const grid=document.getElementById('photoGrid');

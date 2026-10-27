@@ -128,7 +128,8 @@ CREATE TABLE IF NOT EXISTS `meal_plan_item` (
   `create_time`  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time`  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  KEY `idx_meal_plan_item_plan` (`plan_id`, `seq`)
+  KEY `idx_meal_plan_item_plan` (`plan_id`, `seq`),
+  KEY `idx_meal_plan_item_menu` (`menu_item_id`)   -- 菜单「最近点过」排序反查
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='约定菜品明细（快照）';
 
 -- ------------------------------------------------------------
@@ -256,14 +257,15 @@ CREATE TABLE IF NOT EXISTS `meal_checkin` (
 -- ------------------------------------------------------------
 -- 12. 打卡图片明细
 --     拆表原因：mediaCheckAsync 按 trace_id 异步回写单张结果，
---     逗号串字段无法定位「3 张里是哪 1 张没过审」
+--     逗号串字段无法定位「2 张里是哪 1 张没过审」
 --     未过审的图片不返回给前端，也不计入展示
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS `meal_checkin_image` (
   `id`            BIGINT      NOT NULL                COMMENT '主键（53bit 雪花 ID）',
   `checkin_id`    BIGINT      NOT NULL                COMMENT '所属打卡',
-  `url`           VARCHAR(255) NOT NULL               COMMENT '相对路径 /upload/yyyyMM/x.jpg',
-  `seq`           TINYINT     NOT NULL DEFAULT 0      COMMENT '排序 0–2，最多 3 张',
+  `url`           VARCHAR(255) NOT NULL               COMMENT '原图相对路径 /upload/yyyyMM/x.jpg（长边1080, ≤500KB）',
+  `thumb_url`     VARCHAR(255) NOT NULL               COMMENT '缩略图相对路径 /upload/yyyyMM/x_thumb.jpg（长边320, ≤60KB），列表专用',
+  `seq`           TINYINT     NOT NULL DEFAULT 0      COMMENT '排序 0–1，最多 2 张',
   `audit_status`  TINYINT     NOT NULL DEFAULT 0      COMMENT '0审核中 1通过 2屏蔽',
   `trace_id`      VARCHAR(64)     NULL                COMMENT '微信 mediaCheckAsync 返回的追踪号',
   `audited_time`  DATETIME        NULL                COMMENT '审核回调时间',
