@@ -199,10 +199,179 @@
   .avoid-warn{margin:10px 0;background:var(--warn-soft);color:var(--warn);font-size:12px;
     font-weight:700;padding:10px 12px;border-radius:12px;display:none;}
   .avoid-warn.show{display:block;}
+  .rec-card{margin:0 0 10px;background:linear-gradient(135deg,#FFF3E6,#FFE9DC);border-radius:14px;
+    padding:11px 13px;font-size:13px;color:var(--orange-deep);font-weight:700;cursor:pointer;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+    border:1px dashed var(--peach);}
+  .rec-card .rec-t{font-size:11px;color:var(--ink-2);font-weight:400;margin-top:3px;}
 
   .float-actions{position:absolute;left:16px;right:16px;bottom:84px;display:flex;gap:12px;}
   .mini-tag{font-size:11px;background:var(--peach-soft);color:var(--orange-deep);
     padding:2px 8px;border-radius:10px;font-weight:700;}
+
+  /* ---------- 登录 / 配对 ---------- */
+  .auth{padding:40px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;}
+  .auth-logo{width:88px;height:88px;border-radius:28px;background:linear-gradient(135deg,#FFF1E8,#FFE3D6);
+    display:flex;align-items:center;justify-content:center;font-size:44px;box-shadow:var(--shadow);margin-top:20px;}
+  .auth-title{font-size:24px;font-weight:800;margin-top:18px;}
+  .auth-sub{font-size:13px;color:var(--ink-2);margin-top:8px;line-height:1.7;}
+  .auth-actions{width:100%;margin-top:28px;display:flex;flex-direction:column;gap:12px;}
+  .consent{font-size:11px;color:var(--ink-3);margin-top:14px;line-height:1.7;}
+  .consent a{color:var(--orange-deep);text-decoration:none;}
+  .pair-wrap{padding:18px;}
+  .pair-card{margin:6px 0 4px;background:#fff;border-radius:var(--r);padding:20px;
+    box-shadow:var(--shadow);text-align:center;}
+  .pair-code{font-size:34px;font-weight:800;letter-spacing:8px;color:var(--orange-deep);margin:10px 0;}
+  .qr{width:130px;height:130px;margin:12px auto 0;border-radius:16px;
+    background:repeating-linear-gradient(45deg,#4A3F35 0 6px,#fff 6px 12px);opacity:.85;}
+  .pair-wait{display:inline-flex;align-items:center;gap:6px;background:var(--peach-soft);
+    color:var(--orange-deep);font-size:12px;font-weight:700;padding:7px 14px;border-radius:16px;margin-top:14px;}
+  .divider{display:flex;align-items:center;gap:10px;color:var(--ink-3);font-size:12px;margin:16px 0;}
+  .divider::before,.divider::after{content:"";flex:1;height:1px;background:var(--line);}
+  .pair-input{display:flex;gap:8px;margin-top:6px;}
+  .pair-input input{flex:1;border:1.5px solid var(--line);border-radius:12px;padding:11px;
+    font-size:15px;letter-spacing:4px;font-family:inherit;color:var(--ink);background:var(--cream-bg);}
+
+  /* ---------- 采购清单 ---------- */
+  .shop-item{margin:8px 16px;background:#fff;border-radius:16px;padding:13px 14px;
+    box-shadow:var(--shadow-sm);display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .shop-check{width:24px;height:24px;border-radius:8px;border:2px solid var(--peach);flex:none;
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;background:#fff;}
+  .shop-check.on{background:linear-gradient(135deg,var(--orange),var(--orange-deep));border-color:transparent;}
+  .shop-name{font-weight:600;font-size:14px;flex:1;}
+  .shop-name.done{text-decoration:line-through;color:var(--ink-3);}
+  .shop-qty{font-size:12px;color:var(--ink-3);}
+  .shop-progress{margin:4px 16px 8px;font-size:12px;color:var(--ink-2);}
+
+  /* ---------- 空状态 ---------- */
+  .empty-card{margin:10px 16px;background:#fff;border-radius:var(--r);padding:24px 16px;
+    box-shadow:var(--shadow-sm);text-align:center;}
+  .empty-ico{font-size:42px;opacity:.9;}
+  .empty-t{font-weight:800;font-size:15px;margin-top:10px;}
+  .empty-d{font-size:12px;color:var(--ink-2);margin-top:6px;line-height:1.6;}
+
+  /* ---------- 状态补充 ---------- */
+  .state-card{margin:8px 16px;background:#fff;border-radius:var(--r);padding:14px;box-shadow:var(--shadow-sm);}
+  .tag-cancel{background:#EFE9E3;color:var(--ink-2);}
+  .tag-expire{background:#FFF3D6;color:var(--gold);}
+
+  /* ---------- 子页头（返回） ---------- */
+  .subhead{display:flex;align-items:center;gap:10px;padding:14px 16px 6px;}
+  .subhead .back{width:32px;height:32px;border-radius:50%;background:#fff;display:flex;
+    align-items:center;justify-content:center;box-shadow:var(--shadow-sm);cursor:pointer;
+    font-size:17px;color:var(--ink-2);flex:none;}
+  .subhead .tt{font-size:19px;font-weight:800;}
+
+  /* ---------- 历史记录 ---------- */
+  .hist-group{font-size:12px;font-weight:700;color:var(--ink-3);padding:12px 20px 2px;}
+  .hist{margin:8px 16px;background:#fff;border-radius:16px;padding:12px 14px;
+    box-shadow:var(--shadow-sm);cursor:pointer;}
+  .hist-top{display:flex;justify-content:space-between;align-items:center;}
+  .hist-who{font-weight:700;font-size:13px;}
+  .hist-dish{font-size:14px;margin-top:6px;}
+  .hist-meta{font-size:11px;color:var(--ink-3);margin-top:4px;}
+
+  /* ---------- 设置页 ---------- */
+  .srow{margin:8px 16px;background:#fff;border-radius:16px;padding:13px 14px;
+    box-shadow:var(--shadow-sm);display:flex;justify-content:space-between;
+    align-items:center;font-size:14px;font-weight:600;cursor:pointer;}
+  .srow .desc{font-size:11px;color:var(--ink-3);font-weight:400;margin-top:3px;}
+  .srow.danger{color:var(--warn);}
+  .switch{width:44px;height:26px;border-radius:14px;background:#E8DFD6;position:relative;
+    cursor:pointer;transition:.2s;flex:none;}
+  .switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;
+    border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.16);transition:.2s;}
+  .switch.on{background:linear-gradient(135deg,var(--orange),var(--orange-deep));}
+  .switch.on::after{left:21px;}
+
+  /* ---------- 协商谁带（石头剪刀布） ---------- */
+  .rps{display:flex;justify-content:center;align-items:center;gap:18px;margin:20px 0 10px;}
+  .rps-h{width:84px;height:84px;border-radius:24px;background:var(--cream-bg);display:flex;
+    align-items:center;justify-content:center;font-size:40px;box-shadow:var(--shadow-sm);}
+  .rps-vs{font-weight:800;color:var(--ink-3);font-size:13px;}
+  .rps-res{text-align:center;font-size:14px;font-weight:800;color:var(--orange-deep);
+    margin:4px 0 16px;min-height:20px;}
+  .rps-btns{display:flex;gap:8px;margin-bottom:12px;}
+
+  /* ---------- 菜品编辑弹层 ---------- */
+  .f2{margin-bottom:14px;}
+  .f2>label{font-size:12px;font-weight:700;color:var(--ink-2);display:block;margin-bottom:7px;}
+  .f2 input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:12px;
+    padding:11px;font-size:14px;font-family:inherit;color:var(--ink);background:var(--cream-bg);}
+  .f2 input[type=text]:focus{outline:none;border-color:var(--peach);}
+  .pick-row{display:flex;gap:8px;flex-wrap:wrap;}
+  .pick-row .p{background:var(--cream-bg);border:1.5px solid var(--line);border-radius:12px;
+    padding:8px 14px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;}
+  .pick-row .p.on{background:var(--peach-soft);border-color:var(--peach);color:var(--orange-deep);}
+  .avoid-lv{display:flex;gap:8px;}
+  .avoid-lv .lv{flex:1;text-align:center;border:1.5px solid var(--line);border-radius:12px;
+    padding:9px 2px;font-size:12px;font-weight:700;color:var(--ink-2);cursor:pointer;}
+  .avoid-lv .lv.on{background:var(--warn-soft);border-color:var(--warn);color:var(--warn);}
+  .avoid-lv .lv.on.ok{background:var(--peach-soft);border-color:var(--peach);color:var(--orange-deep);}
+
+  /* ---------- 骨架屏 / 下拉刷新 / toast ---------- */
+  .sk{margin:8px 16px;background:#fff;border-radius:16px;padding:16px;box-shadow:var(--shadow-sm);}
+  .sk-line{height:12px;border-radius:8px;margin-top:10px;
+    background:linear-gradient(90deg,#F3EAE2 25%,#FBF6F1 37%,#F3EAE2 63%);
+    background-size:400% 100%;animation:sh 1.3s infinite;}
+  .sk-line:first-child{margin-top:0;}
+  @keyframes sh{0%{background-position:100% 50%}100%{background-position:0 50%}}
+  .refresh{display:flex;align-items:center;justify-content:center;gap:6px;
+    font-size:12px;color:var(--ink-3);padding:10px 0 2px;}
+  .toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.94);
+    background:rgba(74,63,53,.9);color:#fff;font-size:13px;font-weight:600;
+    padding:12px 20px;border-radius:16px;opacity:0;pointer-events:none;
+    transition:.22s;z-index:90;max-width:76%;text-align:center;line-height:1.6;}
+  .toast.show{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  .toast.err{background:rgba(255,107,107,.96);}
+
+  /* ---------- tab 未读角标 ---------- */
+  .tab .ic{position:relative;}
+  .tab-badge{position:absolute;top:-5px;right:-11px;min-width:16px;height:16px;
+    border-radius:9px;background:var(--warn);color:#fff;font-size:10px;font-weight:700;
+    display:flex;align-items:center;justify-content:center;padding:0 4px;line-height:1;}
+  /* ---------- 打卡（饭桌相册） ---------- */
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+  .ph{position:relative;aspect-ratio:1;border-radius:14px;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;font-size:30px;
+    background:linear-gradient(140deg,#FFE0CB,#FFC9B0);}
+  .ph.p2{background:linear-gradient(140deg,#FFEBD2,#FFD9A8);}
+  .ph.p3{background:linear-gradient(140deg,#FDE2E4,#FFC2C7);}
+  .ph .del{position:absolute;top:4px;right:4px;width:18px;height:18px;border-radius:9px;
+    background:rgba(74,63,53,.55);color:#fff;font-size:11px;line-height:18px;text-align:center;cursor:pointer;}
+  .ph-add{aspect-ratio:1;border:1.5px dashed var(--peach);border-radius:14px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    color:var(--orange-deep);font-size:22px;background:var(--cream-bg);cursor:pointer;}
+  .ph-add small{font-size:10px;font-weight:700;margin-top:2px;color:var(--ink-3);}
+  .rate-row{display:flex;gap:8px;}
+  .rate{flex:1;text-align:center;background:var(--cream-bg);border:1.5px solid var(--line);
+    border-radius:14px;padding:10px 2px;cursor:pointer;transition:.15s;}
+  .rate .e{font-size:22px;line-height:1.2;}
+  .rate .t{font-size:11px;font-weight:700;color:var(--ink-2);margin-top:3px;}
+  .rate.on{background:var(--peach-soft);border-color:var(--peach);transform:translateY(-1px);}
+  .rate.on .t{color:var(--orange-deep);}
+  .checkin-cta{display:flex;align-items:center;justify-content:space-between;
+    background:linear-gradient(120deg,#FFF1E4,#FFE3D2);border-radius:14px;
+    padding:12px 14px;font-size:14px;font-weight:800;color:var(--orange-deep);cursor:pointer;}
+  .checkin-cta .r{font-size:11px;font-weight:600;color:var(--ink-2);}
+  .gal{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:6px 16px 20px;}
+  .gal-card{background:#fff;border-radius:18px;overflow:hidden;box-shadow:var(--shadow-sm);}
+  .gal-photo{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:40px;
+    background:linear-gradient(140deg,#FFE0CB,#FFC9B0);}
+  .gal-photo.g2{background:linear-gradient(140deg,#FFEBD2,#FFD9A8);}
+  .gal-photo.g3{background:linear-gradient(140deg,#FDE2E4,#FFC2C7);}
+  .gal-body{padding:9px 10px 11px;}
+  .gal-dish{font-size:12.5px;font-weight:800;color:var(--ink);}
+  .gal-rate{font-size:10.5px;font-weight:700;color:var(--orange-deep);margin-top:3px;}
+  .gal-txt{font-size:11px;color:var(--ink-2);margin-top:4px;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .gal-date{font-size:10px;color:var(--ink-3);margin-top:6px;}
+  .gal-month{font-size:12px;font-weight:800;color:var(--ink-2);padding:14px 18px 4px;}
+  .gal-stat{display:flex;gap:8px;padding:0 16px 4px;}
+  .gal-stat .s{flex:1;background:#fff;border-radius:14px;padding:10px 8px;text-align:center;
+    box-shadow:var(--shadow-sm);}
+  .gal-stat .n{font-size:17px;font-weight:800;color:var(--orange-deep);}
+  .gal-stat .l{font-size:10.5px;color:var(--ink-3);margin-top:1px;}
 </style>
 </head>
 <body>
@@ -325,6 +494,8 @@
         <div class="plan-remark" id="detailRemark">少辣～公司门口等我 🥺</div>
       </div>
 
+      <div class="psub" id="deliverInfo" style="display:none;color:var(--orange-deep);font-weight:700"></div>
+
       <div class="steps" id="steps">
         <div class="step on"><div class="dot">1</div><div class="st">待认领</div></div>
         <div class="step on"><div class="dot">2</div><div class="st">备餐中</div></div>
@@ -340,16 +511,31 @@
       </div>
 
       <div id="carryActions" class="plan-actions" style="margin:14px 16px">
-        <button class="btn btn-ghost btn-sm" onclick="alert('已退回待认领（改派）')">改派</button>
-        <button class="btn btn-primary btn-sm" onclick="advance()">标记已送达 📦</button>
+        <button class="btn btn-ghost btn-sm" onclick="toast('已退回待认领 · 可重新认领')">改派</button>
+        <button class="btn btn-ghost btn-sm" onclick="openNote()">✍️ 便签</button>
+        <button class="btn btn-primary btn-sm" onclick="openDeliver()">标记送达 📦</button>
       </div>
       <div id="orderActions" class="plan-actions" style="margin:14px 16px;display:none">
+        <button class="btn btn-ghost btn-sm" style="color:var(--warn);border-color:var(--warn-soft)" onclick="openCancel()">取消</button>
         <button class="btn btn-primary btn-sm" onclick="finish()">已领取 · 完成 ❤</button>
       </div>
 
-      <div class="note">
+      <div class="note" id="noteBox">
         <span class="from">🐻 老板：</span>锅里留了汤，趁热喝。下楼记得穿外套～
         <div style="margin-top:8px;color:var(--ink-2)">🐰 宝宝 回复：爱你 ❤</div>
+      </div>
+
+      <div class="field" id="reviewBlock" style="display:none">
+        <label>这顿吃到了吗？拍一张记下来</label>
+        <div class="checkin-cta" onclick="openCheckin()">
+          <span>📷 吃饭打卡</span><span class="r">1–3 张照片 · 说句评价 ›</span>
+        </div>
+      </div>
+
+      <div style="padding:0 16px 12px;display:flex;gap:8px">
+        <button class="btn btn-ghost btn-sm" onclick="show('p-shopping')">🛒 采购</button>
+        <button class="btn btn-ghost btn-sm" onclick="show('p-gallery')">📸 相册</button>
+        <button class="btn btn-ghost btn-sm" onclick="show('p-states')">🧭 状态</button>
       </div>
     </section>
 
@@ -371,12 +557,13 @@
         <div class="marks"><span class="mk mk-avoid">⚠忌口</span></div></div>
       <div class="dish"><div><div class="nm">糖醋排骨</div><div class="cat">荤 · 我爱吃</div></div>
         <div class="marks"><span class="mk mk-star">★常点</span></div></div>
-      <div class="fab" onclick="alert('打开菜品编辑弹层')">＋</div>
+      <div class="fab" onclick="openEdit()">＋</div>
     </section>
 
     <!-- ============ 消息 ============ -->
     <section class="page" id="p-msg">
       <div class="ptitle">消息 💬</div>
+      <div class="psub">点进消息列表即全部已读，Tab 红点随之清零</div>
       <div class="msg" onclick="goDetail('carry')">
         <div class="mi">🍚</div>
         <div><div class="mt">宝宝 想吃什么<span class="reddot"></span></div>
@@ -408,11 +595,15 @@
       </div>
       <div class="mrow" onclick="show('p-week')">📅 共同周历 <span class="r">›</span></div>
       <div class="mrow" onclick="show('p-report')">📊 月度轻报告 <span class="r">›</span></div>
-      <div class="mrow" onclick="alert('纪念日设置')">💝 在一起纪念日 <span class="r">128 天 ›</span></div>
-      <div class="mrow" onclick="alert('主题色')">🎨 情侣主题色 <span class="r">奶油橘 ›</span></div>
-      <div class="mrow" onclick="alert('提醒开关')">🔔 提醒设置 <span class="r">›</span></div>
-      <div class="mrow" onclick="alert('解绑二次确认')">💔 解绑情侣 <span class="r">›</span></div>
-      <div class="mrow" onclick="alert('关于')">ℹ️ 关于 <span class="r">›</span></div>
+      <div class="mrow" onclick="show('p-gallery')">📸 饭桌相册 <span class="r">本月 12 顿 ›</span></div>
+      <div class="mrow" onclick="show('p-history')">🗓 历史记录 <span class="r">本月 21 次 ›</span></div>
+      <div class="mrow" onclick="show('p-settings')">⚙️ 设置 <span class="r">›</span></div>
+      <div class="block-h" style="padding-top:18px">演示入口</div>
+      <div class="mrow" onclick="show('p-login')">🔑 登录 / 配对引导 <span class="r">›</span></div>
+      <div class="mrow" onclick="show('p-empty')">🫧 空状态 <span class="r">›</span></div>
+      <div class="mrow" onclick="show('p-states')">🧭 约定状态 <span class="r">›</span></div>
+      <div class="mrow" onclick="show('p-loading')">⏳ 加载 / 刷新 / 错误 <span class="r">›</span></div>
+      <div class="mrow" onclick="toast('情侣带饭 v1.0.0')">ℹ️ 关于 <span class="r">›</span></div>
     </section>
 
     <!-- ============ 共同周历 ============ -->
@@ -425,14 +616,14 @@
         <div class="wday"><div class="d">周三</div><div class="who w-a">宝宝带</div></div>
         <div class="wday"><div class="d">周四</div><div class="who w-none">待定</div></div>
         <div class="wday"><div class="d">周五</div><div class="who w-b">老板带</div></div>
-        <div class="wday"><div class="d">周六</div><div class="who w-none">轮流</div></div>
+        <div class="wday"><div class="d">周六</div><div class="who w-none">休息</div></div>
         <div class="wday"><div class="d">周日</div><div class="who w-none">休息</div></div>
       </div>
       <div class="plan" style="margin-top:14px">
         <div class="plan-remark">周四还没排～ 抛个硬币决定？🪙 或「今天你带还是我带」协商一下</div>
         <div class="plan-actions">
-          <button class="btn btn-ghost btn-sm" onclick="alert('石头剪刀布 / 抛硬币')">🪙 协商谁带</button>
-          <button class="btn btn-primary btn-sm" onclick="alert('指定周四带饭人')">指定</button>
+          <button class="btn btn-ghost btn-sm" onclick="openRps()">🪙 协商谁带</button>
+          <button class="btn btn-primary btn-sm" onclick="toast('已指定周四：宝宝带')">指定</button>
         </div>
       </div>
     </section>
@@ -461,11 +652,295 @@
       </div>
     </section>
 
+    <!-- ============ 登录页 ============ -->
+    <section class="page" id="p-login">
+      <div class="auth">
+        <div class="auth-logo">🍱</div>
+        <div class="auth-title">情侣带饭</div>
+        <div class="auth-sub">今天想吃什么，我带给你。<br>只属于你们两个人的私密约定。</div>
+        <div class="auth-actions">
+          <button class="btn btn-primary" onclick="login()">微信一键登录</button>
+          <button class="btn btn-ghost" onclick="show('p-pair')">我有邀请码</button>
+        </div>
+        <div class="consent">登录即代表同意 <a>《用户协议》</a> 与 <a>《隐私政策》</a><br>
+          仅收集 openid / 昵称 / 头像，仅用于情侣双方配对</div>
+      </div>
+    </section>
+
+    <!-- ============ 配对引导 ============ -->
+    <section class="page" id="p-pair">
+      <div class="ptitle">配对</div>
+      <div class="psub">邀请 TA 一起，开始你们的带饭约定</div>
+      <div class="pair-wrap">
+        <div class="pair-card">
+          <div style="font-size:13px;color:var(--ink-2);font-weight:700">我的邀请码</div>
+          <div class="pair-code">835210</div>
+          <button class="btn btn-ghost btn-sm" style="margin:0 auto" onclick="toast('邀请码已复制：835210')">复制邀请码</button>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:8px">24 小时内有效 · 过期可重新生成</div>
+          <div class="qr"></div>
+          <div class="pair-wait">⏳ 等待对方加入…</div>
+        </div>
+        <div class="divider">或输入 TA 的邀请码</div>
+        <div class="pair-input">
+          <input placeholder="6 位邀请码" maxlength="6" />
+          <button class="btn btn-primary btn-sm" style="flex:none;padding:11px 18px" onclick="pairNow()">加入</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 采购清单 ============ -->
+    <section class="page" id="p-shopping">
+      <div class="ptitle">采购清单 🛒</div>
+      <div class="psub">由「红烧肉 · 番茄蛋汤」生成 · 到超市照买</div>
+      <div class="shop-progress" id="shopProgress">已买 1 / 4</div>
+      <div class="shop-item" onclick="toggleBuy(this)"><div class="shop-check on">✓</div><div class="shop-name done">五花肉</div><div class="shop-qty">500g</div></div>
+      <div class="shop-item" onclick="toggleBuy(this)"><div class="shop-check"></div><div class="shop-name">番茄</div><div class="shop-qty">2 个</div></div>
+      <div class="shop-item" onclick="toggleBuy(this)"><div class="shop-check"></div><div class="shop-name">鸡蛋</div><div class="shop-qty">3 个</div></div>
+      <div class="shop-item" onclick="toggleBuy(this)"><div class="shop-check"></div><div class="shop-name">冰糖</div><div class="shop-qty">适量</div></div>
+      <div style="padding:6px 16px 12px;display:flex;gap:10px">
+        <button class="btn btn-ghost" onclick="toast('手动添加食材')">＋ 添一项</button>
+        <button class="btn btn-primary" onclick="show('p-detail')">回到约定</button>
+      </div>
+    </section>
+
+    <!-- ============ 空状态演示 ============ -->
+    <section class="page" id="p-empty">
+      <div class="ptitle">空状态</div>
+      <div class="psub">4 类空场景的兜底文案与引导</div>
+      <div class="empty-card"><div class="empty-ico">🍽</div><div class="empty-t">今天还没有约定</div><div class="empty-d">发一条「我想吃」，让 TA 来带饭吧</div><button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="show('p-create-order')">我想吃</button></div>
+      <div class="empty-card"><div class="empty-ico">📖</div><div class="empty-t">菜单库还是空的</div><div class="empty-d">把彼此爱吃的、不吃记下来，点餐更省心</div><button class="btn btn-ghost btn-sm" style="margin-top:12px" onclick="openEdit()">添加第一道菜</button></div>
+      <div class="empty-card"><div class="empty-ico">💬</div><div class="empty-t">暂无消息</div><div class="empty-d">约定有动静时，会在这里提醒你</div></div>
+      <div class="empty-card"><div class="empty-ico">🗓</div><div class="empty-t">还没有历史记录</div><div class="empty-d">完成一次带饭，就会留下甜蜜记录</div></div>
+    </section>
+
+    <!-- ============ 约定状态补充 ============ -->
+    <section class="page" id="p-states">
+      <div class="ptitle">约定状态 · 补充</div>
+      <div class="psub">主动带 / 已取消 / 已过期 三种态</div>
+      <div class="state-card">
+        <div class="plan-top"><div class="plan-who">🐻 老板 带了</div><div class="tag tag-wait">待接收</div></div>
+        <div class="plan-dish">红烧肉 · 米饭</div>
+        <div class="plan-remark">主动带饭，等宝宝确认接收</div>
+        <div class="plan-actions"><button class="btn btn-primary btn-sm" onclick="toast('已确认接收 · 转备餐中')">确认接收</button><button class="btn btn-ghost btn-sm" onclick="toast('已婉拒并说明原因')">婉拒</button></div>
+      </div>
+      <div class="state-card">
+        <div class="plan-top"><div class="plan-who">🐰 宝宝 想吃</div><div class="tag tag-cancel">已取消</div></div>
+        <div class="plan-dish">糖醋排骨</div>
+        <div class="plan-remark">取消原因：今天加班，改天吧</div>
+      </div>
+      <div class="state-card">
+        <div class="plan-top"><div class="plan-who">🐰 宝宝 想吃</div><div class="tag tag-expire">已过期</div></div>
+        <div class="plan-dish">番茄蛋汤</div>
+        <div class="plan-remark">昨日约定未完成，已自动归档</div>
+        <div class="plan-actions"><button class="btn btn-ghost btn-sm" onclick="toast('已按原约定重新发起')">重新发起</button></div>
+      </div>
+    </section>
+
+    <!-- ============ 历史记录 ============ -->
+    <!-- ============ 饭桌相册（★F 打卡沉淀） ============ -->
+    <section class="page" id="p-gallery">
+      <div class="subhead"><div class="back" onclick="show('p-today')">‹</div><div class="tt">饭桌相册 📸</div></div>
+      <div class="psub">一起吃的每顿饭，都留下了照片</div>
+
+      <div class="gal-stat">
+        <div class="s"><div class="n">12</div><div class="l">本月打卡</div></div>
+        <div class="s"><div class="n">红烧肉</div><div class="l">最爱的一道</div></div>
+        <div class="s"><div class="n">5 天</div><div class="l">连续打卡</div></div>
+      </div>
+
+      <div class="gal-month">2026 年 10 月 · 12 顿</div>
+      <div class="gal">
+        <div class="gal-card" onclick="openCheckin()">
+          <div class="gal-photo">🍖</div>
+          <div class="gal-body">
+            <div class="gal-dish">红烧肉</div>
+            <div class="gal-rate">🔥 香！</div>
+            <div class="gal-txt">冰糖放得刚好，入口即化，明天还想吃</div>
+            <div class="gal-date">10-27 · 宝宝打卡</div>
+          </div>
+        </div>
+        <div class="gal-card">
+          <div class="gal-photo g2">🍅</div>
+          <div class="gal-body">
+            <div class="gal-dish">番茄蛋汤</div>
+            <div class="gal-rate">😋 好吃</div>
+            <div class="gal-txt">汤有点淡，下次多放半个番茄</div>
+            <div style="margin-top:5px;font-size:10.5px;color:var(--orange-deep)">🐻 回应：下次加两勺糖</div>
+            <div class="gal-date">10-27 · 宝宝打卡</div>
+          </div>
+        </div>
+        <div class="gal-card">
+          <div class="gal-photo g3">🍜</div>
+          <div class="gal-body">
+            <div class="gal-dish">西红柿鸡蛋面</div>
+            <div class="gal-rate">🔥 香！</div>
+            <div class="gal-txt">加班到八点，这碗面救了我</div>
+            <div class="gal-date">10-24 · 宝宝打卡</div>
+          </div>
+        </div>
+        <div class="gal-card">
+          <div class="gal-photo" style="background:linear-gradient(140deg,#F0EDE9,#E3DDD6)">⏳</div>
+          <div class="gal-body">
+            <div class="gal-dish">青椒炒肉</div>
+            <div class="gal-rate" style="color:var(--ink-3)">审核中…</div>
+            <div class="gal-txt" style="color:var(--ink-3)">照片检测通过后才会展示给 TA</div>
+            <div class="gal-date">10-23 · 我自己可见</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gal-month">2026 年 9 月 · 18 顿</div>
+      <div class="gal">
+        <div class="gal-card">
+          <div class="gal-photo g2">🥟</div>
+          <div class="gal-body">
+            <div class="gal-dish">韭菜鸡蛋饺子</div>
+            <div class="gal-rate">🔥 香！</div>
+            <div class="gal-txt">第一次包，丑但好吃</div>
+            <div class="gal-date">09-30 · 宝宝打卡</div>
+          </div>
+        </div>
+        <div class="gal-card">
+          <div class="gal-photo g3">🍲</div>
+          <div class="gal-body">
+            <div class="gal-dish">土豆炖牛肉</div>
+            <div class="gal-rate">😐 还差点意思</div>
+            <div class="gal-txt">牛肉有点柴，下次炖久一点</div>
+            <div class="gal-date">09-28 · 宝宝打卡</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="empty" style="margin-top:6px">
+        <div class="ico">📷</div>
+        <div class="main">今天吃完也拍一张吧</div>
+        <div class="sub">照片会按月串成相册，一年后能翻回来</div>
+      </div>
+    </section>
+
+    <section class="page" id="p-history">
+      <div class="subhead"><div class="back" onclick="show('p-me')">‹</div><div class="tt">历史记录 🗓</div></div>
+      <div class="psub">每一次投喂都留了痕，完成和取消都记着</div>
+      <div class="filters">
+        <div class="f on" onclick="filtHist(this,'all')">全部</div>
+        <div class="f" onclick="filtHist(this,'done')">已完成</div>
+        <div class="f" onclick="filtHist(this,'cancel')">已取消</div>
+        <div class="f" onclick="filtHist(this,'expire')">已过期</div>
+      </div>
+      <div class="hist-group">2026 年 10 月 · 共 21 次</div>
+      <div class="hist" data-st="done" onclick="goDetail('order', true)">
+        <div class="hist-top"><div class="hist-who">🐻 老板 带饭</div><div class="tag tag-done">已完成 ❤+1</div></div>
+        <div class="hist-dish">糖醋排骨 · 米饭</div>
+        <div class="hist-meta">10-27 周一 · 便签「趁热吃，爱你好不好」</div>
+      </div>
+      <div class="hist" data-st="done" onclick="goDetail('order', true)">
+        <div class="hist-top"><div class="hist-who">🐰 宝宝 带饭</div><div class="tag tag-done">已完成 ❤+1</div></div>
+        <div class="hist-dish">红烧肉 · 番茄蛋汤</div>
+        <div class="hist-meta">10-24 周五 · 便签「锅里留了汤」</div>
+      </div>
+      <div class="hist" data-st="cancel">
+        <div class="hist-top"><div class="hist-who">🐰 宝宝 想吃</div><div class="tag tag-cancel">已取消</div></div>
+        <div class="hist-dish">糖醋排骨</div>
+        <div class="hist-meta">10-23 周四 · 取消原因：今天加班，改天吧</div>
+      </div>
+      <div class="hist" data-st="expire">
+        <div class="hist-top"><div class="hist-who">🐻 老板 带了</div><div class="tag tag-expire">已过期</div></div>
+        <div class="hist-dish">番茄蛋汤</div>
+        <div class="hist-meta">10-22 周三 · 未确认领取，已自动归档</div>
+      </div>
+      <div class="hist" data-st="done" onclick="goDetail('order', true)">
+        <div class="hist-top"><div class="hist-who">🐻 老板 带饭</div><div class="tag tag-done">已完成 ❤+1</div></div>
+        <div class="hist-dish">青椒炒肉 · 米饭</div>
+        <div class="hist-meta">10-21 周二 · TA 说好吃 😋</div>
+      </div>
+
+      <div class="hist-group">2026 年 9 月 · 共 18 次</div>
+      <div class="hist" data-st="done">
+        <div class="hist-top"><div class="hist-who">🐰 宝宝 带饭</div><div class="tag tag-done">已完成 ❤+1</div></div>
+        <div class="hist-dish">番茄牛腩 · 米饭</div>
+        <div class="hist-meta">09-30 周三 · 便签「今天也很想你」</div>
+      </div>
+
+      <div class="empty-card" id="histEmpty" style="display:none">
+        <div class="empty-ico">🗓</div><div class="empty-t">这个筛选下还没有记录</div>
+        <div class="empty-d">换个条件看看，或去发起一次新的约定</div>
+      </div>
+    </section>
+
+    <!-- ============ 设置 ============ -->
+    <section class="page" id="p-settings">
+      <div class="subhead"><div class="back" onclick="show('p-me')">‹</div><div class="tt">设置 ⚙️</div></div>
+      <div class="srow" onclick="toast('打开纪念日设置')">
+        <div>💝 在一起纪念日<div class="desc">2026-06-21 · 已 128 天</div></div>
+        <div style="color:var(--ink-3)">›</div>
+      </div>
+      <div class="srow" onclick="toast('打开主题色')">
+        <div>🎨 情侣主题色<div class="desc">奶油橘</div></div>
+        <div style="color:var(--ink-3)">›</div>
+      </div>
+      <div class="srow">
+        <div>🔔 每日带饭提醒<div class="desc">工作日 10:30 提醒「今天谁带饭」</div></div>
+        <div class="switch on" onclick="tog(this)"></div>
+      </div>
+      <div class="srow">
+        <div>📦 送达通知<div class="desc">TA 标记送达时提醒我下楼</div></div>
+        <div class="switch on" onclick="tog(this)"></div>
+      </div>
+      <div class="srow">
+        <div>💬 便签提醒<div class="desc">收到新便签时提醒</div></div>
+        <div class="switch" onclick="tog(this)"></div>
+      </div>
+      <div class="srow" onclick="toast('已清理缓存 12.4M')">
+        <div>🧹 清除本地缓存<div class="desc">不影响云端记录</div></div>
+        <div style="color:var(--ink-3)">12.4M ›</div>
+      </div>
+      <div class="srow danger" onclick="openUnbind()">
+        <div>💔 解绑情侣</div>
+        <div style="color:var(--ink-3)">›</div>
+      </div>
+      <div style="padding:16px 16px 6px">
+        <button class="btn btn-ghost" onclick="toast('已退出登录')">退出登录</button>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--ink-3);padding:6px 0 20px">
+        v1.0.0 · 仅收集 openid / 昵称 / 头像
+      </div>
+    </section>
+
+    <!-- ============ 加载 / 刷新 / 错误兜底 ============ -->
+    <section class="page" id="p-loading">
+      <div class="subhead"><div class="back" onclick="show('p-today')">‹</div><div class="tt">加载与兜底</div></div>
+      <div class="psub">骨架屏 · 下拉刷新 · 错误 toast · 空网络态</div>
+      <div class="refresh">↓ 下拉刷新 · 松手重新加载</div>
+      <div class="sk">
+        <div class="sk-line" style="width:36%"></div>
+        <div class="sk-line" style="width:88%"></div>
+        <div class="sk-line" style="width:60%"></div>
+      </div>
+      <div class="sk">
+        <div class="sk-line" style="width:28%"></div>
+        <div class="sk-line" style="width:74%"></div>
+      </div>
+      <div style="padding:10px 16px;display:flex;gap:10px">
+        <button class="btn btn-ghost btn-sm" onclick="toast('网络不给力，请稍后重试',1)">模拟错误</button>
+        <button class="btn btn-primary btn-sm" onclick="toast('已刷新 ✓')">模拟刷新</button>
+      </div>
+      <div class="empty-card" style="border:1.5px dashed var(--line);box-shadow:none;margin-top:6px">
+        <div class="empty-ico">📡</div>
+        <div class="empty-t">网络开小差了</div>
+        <div class="empty-d">检查一下网络连接，点下面重新加载</div>
+        <button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="toast('重新加载中…')">重新加载</button>
+      </div>
+    </section>
+
     <!-- ============ 菜单选择弹层 ============ -->
     <div class="modal" id="menuModal">
       <div class="sheet">
         <h3>选择菜品 🍽</h3>
         <div class="avoid-warn" id="avoidWarn">⚠ 对方不吃「香菜」，确定要加吗？</div>
+        <div class="rec-card" onclick="pickRec()">
+          <div>🍚 今天推荐：红烧肉<div class="rec-t">TA 本周 70% 点辣 · 你常做的一道</div></div>
+          <span>＋</span>
+        </div>
         <div class="mlist" id="menuList"></div>
         <div style="margin-top:14px;display:flex;gap:10px">
           <button class="btn btn-ghost" onclick="closeMenu()">取消</button>
@@ -474,13 +949,221 @@
       </div>
     </div>
 
+    <!-- ============ 菜品编辑弹层 ============ -->
+    <div class="modal" id="editModal">
+      <div class="sheet">
+        <h3>添加菜品 🍽</h3>
+        <div class="f2">
+          <label>菜名</label>
+          <input type="text" id="editName" placeholder="如：红烧肉" />
+        </div>
+        <div class="f2">
+          <label>分类</label>
+          <div class="pick-row">
+            <div class="p on" onclick="pickOne(this)">荤</div>
+            <div class="p" onclick="pickOne(this)">素</div>
+            <div class="p" onclick="pickOne(this)">汤</div>
+            <div class="p" onclick="pickOne(this)">主食</div>
+            <div class="p" onclick="pickOne(this)">配菜</div>
+          </div>
+        </div>
+        <div class="f2">
+          <label>归属</label>
+          <div class="pick-row">
+            <div class="p on" onclick="pickOne(this)">我的</div>
+            <div class="p" onclick="pickOne(this)">TA 的</div>
+          </div>
+        </div>
+        <div class="f2">
+          <label>标记</label>
+          <div class="pick-row">
+            <div class="p" onclick="pickOne(this)">★ 常点</div>
+            <div class="p" onclick="pickOne(this)">🌱 想试试</div>
+          </div>
+        </div>
+        <div class="f2">
+          <label>忌口等级</label>
+          <div class="avoid-lv">
+            <div class="lv on ok" data-lv="0" onclick="pickAvoid(this)">无</div>
+            <div class="lv" data-lv="1" onclick="pickAvoid(this)">少吃</div>
+            <div class="lv" data-lv="2" onclick="pickAvoid(this)">不吃</div>
+            <div class="lv" data-lv="3" onclick="pickAvoid(this)">过敏</div>
+          </div>
+          <div style="font-size:11px;color:var(--ink-3);margin-top:8px;line-height:1.6">
+            点餐命中「不吃 / 过敏」会弹强提醒，但<b>不阻止提交</b>（Q2：由人决定）
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px">
+          <button class="btn btn-ghost" onclick="closeModal('editModal')">取消</button>
+          <button class="btn btn-primary" onclick="saveDish()">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 协商谁带弹层 ============ -->
+    <div class="modal" id="rpsModal">
+      <div class="sheet">
+        <h3>今天谁带？ 🪙 <span style="font-size:11px;color:var(--ink-2);font-weight:400">（二期预览）</span></h3>
+        <div style="font-size:12px;color:var(--ink-2);line-height:1.7">
+          石头剪刀布，赢的人今天休息，输的人带饭～
+        </div>
+        <div class="rps">
+          <div class="rps-h" id="rpsMe">✊</div>
+          <div class="rps-vs">VS</div>
+          <div class="rps-h" id="rpsTa">❓</div>
+        </div>
+        <div class="rps-res" id="rpsRes">选一个出拳吧</div>
+        <div class="rps-btns">
+          <button class="btn btn-ghost btn-sm" onclick="playRps('rock')">✊ 石头</button>
+          <button class="btn btn-ghost btn-sm" onclick="playRps('scissor')">✌️ 剪刀</button>
+          <button class="btn btn-ghost btn-sm" onclick="playRps('paper')">✋ 布</button>
+        </div>
+        <button class="btn btn-primary" style="width:100%" onclick="closeModal('rpsModal')">先这样</button>
+      </div>
+    </div>
+
+    <!-- ============ 送达交付弹层（★C 仪式感） ============ -->
+    <div class="modal" id="deliverModal">
+      <div class="sheet">
+        <h3>送到哪儿啦？📦</h3>
+        <div class="f2">
+          <label>交付位置</label>
+          <div class="pick-row">
+            <div class="p on" onclick="pickOne(this)">公司门口柜 B12</div>
+            <div class="p" onclick="pickOne(this)">楼下大厅</div>
+            <div class="p" onclick="pickOne(this)">工位</div>
+          </div>
+        </div>
+        <div class="f2">
+          <label>留句话（可选）</label>
+          <div class="pick-row" style="margin-bottom:8px">
+            <div class="p" onclick="fillNote(this)">锅里留了汤</div>
+            <div class="p" onclick="fillNote(this)">趁热喝～</div>
+            <div class="p" onclick="fillNote(this)">记得穿外套</div>
+          </div>
+          <textarea class="ta" id="deliverNote" rows="2" placeholder="想对 TA 说点什么"></textarea>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <button class="btn btn-ghost" onclick="closeModal('deliverModal')">再等等</button>
+          <button class="btn btn-primary" onclick="confirmDeliver()">确认送达</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 便签留言弹层 ============ -->
+    <div class="modal" id="noteModal">
+      <div class="sheet">
+        <h3>写张便签 ✍️</h3>
+        <div class="pick-row" style="margin-bottom:10px">
+          <div class="p" onclick="fillNote2(this)">锅里留了汤</div>
+          <div class="p" onclick="fillNote2(this)">趁热吃，爱你 ❤</div>
+          <div class="p" onclick="fillNote2(this)">今天辛苦啦</div>
+        </div>
+        <textarea class="ta" id="noteInput" rows="3" maxlength="80"
+          oninput="updNoteCount()" placeholder="最多 80 字"></textarea>
+        <div style="text-align:right;font-size:11px;color:var(--ink-3);margin-top:6px" id="noteCount">0 / 80</div>
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button class="btn btn-ghost" onclick="closeModal('noteModal')">取消</button>
+          <button class="btn btn-primary" onclick="sendNote()">贴上去</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 取消原因弹层 ============ -->
+    <div class="modal" id="cancelModal">
+      <div class="sheet">
+        <h3>取消这次约定？</h3>
+        <div style="font-size:12px;color:var(--ink-2);margin-bottom:12px;line-height:1.7">
+          取消后<b style="color:var(--warn)">本次不计爱心值</b>，TA 会收到通知。
+        </div>
+        <div class="pick-row" id="cancelReasons" style="flex-direction:column;gap:8px">
+          <div class="p" style="text-align:center" onclick="pickReason(this)">今天加班，来不及</div>
+          <div class="p" style="text-align:center" onclick="pickReason(this)">临时有约</div>
+          <div class="p" style="text-align:center" onclick="pickReason(this)">身体不太舒服</div>
+          <div class="p" style="text-align:center" onclick="pickReason(this)">改了别的安排</div>
+        </div>
+        <textarea class="ta" id="cancelText" rows="2" placeholder="补充一句（可选）"
+          style="margin-top:10px"></textarea>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn btn-ghost" onclick="closeModal('cancelModal')">再想想</button>
+          <button class="btn btn-primary" style="background:linear-gradient(135deg,#FF8F84,#FF6B6B)"
+            onclick="confirmCancel()">确认取消</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 吃饭打卡弹层（★F） ============ -->
+    <div class="modal" id="checkinModal">
+      <div class="sheet">
+        <h3>这顿怎么样？📸</h3>
+        <div style="font-size:11.5px;color:var(--ink-2);margin:-6px 0 12px;line-height:1.6">
+          拍一张，一年后还能翻回来 · 只有你们俩看得见
+        </div>
+
+        <div class="f2">
+          <label>照片（1–3 张）</label>
+          <div class="photo-grid" id="photoGrid">
+            <div class="ph"><span>🍖</span><div class="del" onclick="delPhoto(this)">✕</div></div>
+            <div class="ph-add" onclick="addPhoto()">＋<small>拍 / 选</small></div>
+          </div>
+        </div>
+
+        <div class="f2">
+          <label>味道怎么样</label>
+          <div class="rate-row" id="rateRow">
+            <div class="rate" onclick="pickRate(this)"><div class="e">🔥</div><div class="t">香！</div></div>
+            <div class="rate" onclick="pickRate(this)"><div class="e">😋</div><div class="t">好吃</div></div>
+            <div class="rate" onclick="pickRate(this)"><div class="e">😐</div><div class="t">还差点意思</div></div>
+          </div>
+        </div>
+
+        <div class="f2">
+          <label>说两句（可选）</label>
+          <div class="pick-row" style="margin-bottom:8px">
+            <div class="p" onclick="fillCk(this)">香！</div>
+            <div class="p" onclick="fillCk(this)">下次少辣</div>
+            <div class="p" onclick="fillCk(this)">想吃第二次</div>
+          </div>
+          <textarea class="ta" id="ckText" rows="2" maxlength="100"
+            oninput="updCkCount()" placeholder="这顿有什么想说的（最多 100 字）"></textarea>
+          <div style="text-align:right;font-size:11px;color:var(--ink-3);margin-top:6px" id="ckCount">0 / 100</div>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:6px">
+          <button class="btn btn-ghost" onclick="closeModal('checkinModal')">先不记</button>
+          <button class="btn btn-primary" onclick="submitCheckin()">记下来 ❤</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 解绑确认弹层 ============ -->
+    <div class="modal" id="unbindModal">
+      <div class="sheet" style="text-align:center">
+        <div style="font-size:38px">💔</div>
+        <h3 style="margin:10px 0 8px">确定要解绑吗？</h3>
+        <div style="font-size:13px;color:var(--ink-2);line-height:1.9;text-align:left;padding:0 4px">
+          解绑后双方都无法再发起新的约定。<br>
+          <b style="color:var(--ink)">历史记录会保留</b>，你们仍可在「历史记录」里回看；<br>
+          想继续带饭，重新配对绑定即可。
+        </div>
+        <div style="display:flex;gap:10px;margin-top:20px">
+          <button class="btn btn-ghost" onclick="closeModal('unbindModal')">再想想</button>
+          <button class="btn btn-primary" style="background:linear-gradient(135deg,#FF8F84,#FF6B6B)"
+            onclick="doUnbind()">确认解绑</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 全局 toast -->
+    <div class="toast" id="toast"></div>
+
   </div>
 
   <!-- 底部 Tab -->
   <nav class="tabbar">
     <div class="tab active" onclick="show('p-today')"><div class="ic">🍱</div>今日约定</div>
     <div class="tab" onclick="show('p-menu')"><div class="ic">🍽</div>菜单库</div>
-    <div class="tab" onclick="show('p-msg')"><div class="ic">💬</div>消息</div>
+    <div class="tab" onclick="show('p-msg');readAll()"><div class="ic">💬<span class="tab-badge" id="msgBadge">2</span></div>消息</div>
     <div class="tab" onclick="show('p-me')"><div class="ic">👤</div>我的</div>
   </nav>
 </div>
@@ -501,9 +1184,13 @@
     // tab 高亮
     const map={'p-today':0,'p-menu':1,'p-msg':2,'p-me':3};
     document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active', map[id]===i));
-    document.getElementById('menuModal').classList.remove('active');
+    // 登录 / 配对为全屏流程，隐藏底部 Tab
+    document.querySelector('.tabbar').style.display = (id==='p-login'||id==='p-pair')?'none':'flex';
+    // 切页时关掉所有弹层
+    document.querySelectorAll('.modal').forEach(m=>m.classList.remove('active'));
   }
-  function goDetail(view){
+  function goDetail(view, done){
+    if(done) checkinUnlocked = true;
     switchView(view);
     show('p-detail');
   }
@@ -513,17 +1200,41 @@
     document.getElementById('carryActions').style.display = v==='carry'?'flex':'none';
     document.getElementById('orderActions').style.display = v==='order'?'flex':'none';
     document.getElementById('detailTitle').textContent = v==='carry'?'约定详情 · 带饭方':'约定详情 · 接收方';
+    // 打卡只属于接收方（PRD §12.4），且必须已交付
+    document.getElementById('reviewBlock').style.display =
+      (checkinUnlocked && v==='order') ? 'block' : 'none';
   }
-  function advance(){
+  function advance(loc,note){
     // 备餐中 -> 已送达
-    setStep(3); document.getElementById('detailStatus').textContent='已送达';
-    document.getElementById('detailStatus').className='tag tag-wait';
-    alert('已标记送达，推送「在楼下，下来拿」给接收方');
+    setStep(3);
+    const st=document.getElementById('detailStatus');
+    st.textContent='已送达'; st.className='tag tag-wait';
+    if(loc){
+      const di=document.getElementById('deliverInfo');
+      di.style.display='block'; di.textContent='📦 已放在：'+loc;
+    }
+    if(note){
+      document.getElementById('noteBox').innerHTML='<span class="from">🐻 老板：</span>'+note;
+    }
+    document.getElementById('reviewBlock').style.display = 'none';
+    checkinUnlocked = true;
+    syncCheckin();
+    toast('已标记送达 · 推送「在楼下，下来拿」给接收方');
   }
   function finish(){
-    setStep(4); document.getElementById('detailStatus').textContent='已完成 ❤+1';
-    document.getElementById('detailStatus').className='tag tag-done';
-    alert('约定完成，带饭方爱心值 +1');
+    setStep(4);
+    const st=document.getElementById('detailStatus');
+    st.textContent='已完成 ❤+1'; st.className='tag tag-done';
+    checkinUnlocked = true;
+    syncCheckin();
+    toast('约定完成 · 带饭方爱心值 +1');
+  }
+  // 打卡入口只给接收方（PRD §12.4 / §5.7）
+  let checkinUnlocked = false, checkinDone = false;
+  function syncCheckin(){
+    const isOrder = document.getElementById('t-order').classList.contains('on');
+    document.getElementById('reviewBlock').style.display =
+      (checkinUnlocked && isOrder) ? 'block' : 'none';
   }
   function setStep(n){
     const steps=document.querySelectorAll('#steps .step');
@@ -556,13 +1267,236 @@
     if(picked.length) document.getElementById(ph).textContent='已选 '+picked.length+' 道';
     closeMenu();
   }
+  // 智能推荐：一键加进已选
+  function pickRec(){
+    if(!picked.includes('红烧肉')) picked.push('红烧肉');
+    openMenu();
+    toast('已加入「红烧肉」');
+  }
   function submitOrder(){
-    alert('约定已发出 💌 → 推送给老板「宝宝想吃…」');
+    toast('约定已发出 💌 · 推送给老板「宝宝想吃…」');
     show('p-today');
   }
   function submitCarry(){
-    alert('已提交，待宝宝确认接收');
+    toast('已提交，待宝宝确认接收');
     show('p-today');
+  }
+  function login(){ show('p-pair'); }
+  function pairNow(){ toast('已加入，绑定成功 💞'); show('p-today'); }
+  function toggleBuy(el){
+    const c=el.querySelector('.shop-check');
+    const n=el.querySelector('.shop-name');
+    c.classList.toggle('on');
+    c.textContent=c.classList.contains('on')?'✓':'';
+    n.classList.toggle('done');
+    const total=document.querySelectorAll('#p-shopping .shop-item').length;
+    const done=document.querySelectorAll('#p-shopping .shop-check.on').length;
+    document.getElementById('shopProgress').textContent='已买 '+done+' / '+total;
+  }
+
+  /* ================= P1 补充交互 ================= */
+
+  // 通用弹层
+  function openModal(id){document.getElementById(id).classList.add('active');}
+  function closeModal(id){document.getElementById(id).classList.remove('active');}
+
+  // 轻提示（替代 alert，符合小程序 toast 体感）
+  function toast(msg,isErr){
+    const t=document.getElementById('toast');
+    t.textContent=msg;
+    t.className='toast show'+(isErr?' err':'');
+    clearTimeout(window.__toastTimer);
+    window.__toastTimer=setTimeout(()=>t.classList.remove('show'),1700);
+  }
+
+  // 设置开关
+  function tog(el){el.classList.toggle('on');}
+
+  // 菜品编辑
+  function openEdit(){
+    document.getElementById('editName').value='';
+    openModal('editModal');
+  }
+  function pickOne(el){
+    el.parentElement.querySelectorAll('.p').forEach(x=>x.classList.remove('on'));
+    el.classList.add('on');
+  }
+  function pickAvoid(el){
+    el.parentElement.querySelectorAll('.lv').forEach(x=>x.classList.remove('on','ok'));
+    el.classList.add('on');
+    if(el.dataset.lv==='0') el.classList.add('ok');
+  }
+  function saveDish(){
+    const n=document.getElementById('editName').value.trim();
+    if(!n){ toast('先给菜品起个名字～',1); return; }
+    closeModal('editModal');
+    toast('已保存「'+n+'」到菜单库');
+  }
+
+  // 石头剪刀布 · 协商谁带
+  const RPS={rock:'✊',scissor:'✌️',paper:'✋'};
+  const RPS_KEYS=['rock','scissor','paper'];
+  function openRps(){
+    document.getElementById('rpsMe').textContent='✊';
+    document.getElementById('rpsTa').textContent='❓';
+    document.getElementById('rpsRes').textContent='选一个出拳吧';
+    openModal('rpsModal');
+  }
+  function playRps(my){
+    const ta=RPS_KEYS[Math.floor(Math.random()*3)];
+    document.getElementById('rpsMe').textContent=RPS[my];
+    document.getElementById('rpsTa').textContent='❓';
+    document.getElementById('rpsRes').textContent='出拳中…';
+    setTimeout(()=>{
+      document.getElementById('rpsTa').textContent=RPS[ta];
+      let r;
+      if(my===ta) r='平局，再来一次～';
+      else if((my==='rock'&&ta==='scissor')||(my==='scissor'&&ta==='paper')||(my==='paper'&&ta==='rock'))
+        r='🐰 你赢了！今天 TA 带饭';
+      else r='🐻 TA 赢了！今天你带饭';
+      document.getElementById('rpsRes').textContent=r;
+    },600);
+  }
+
+  // 解绑二次确认
+  function openUnbind(){openModal('unbindModal');}
+  function doUnbind(){
+    closeModal('unbindModal');
+    toast('已解绑 · 历史记录已保留');
+    setTimeout(()=>show('p-login'),1000);
+  }
+
+  // 消息已读：进列表即全清
+  function readAll(){
+    document.querySelectorAll('#p-msg .reddot').forEach(d=>d.remove());
+    const b=document.getElementById('msgBadge');
+    if(b) b.style.display='none';
+  }
+
+  // 历史筛选
+  function filtHist(el,st){
+    el.parentElement.querySelectorAll('.f').forEach(x=>x.classList.toggle('on',x===el));
+    let shown=0;
+    document.querySelectorAll('#p-history .hist').forEach(h=>{
+      const ok=(st==='all'||h.dataset.st===st);
+      h.style.display=ok?'block':'none';
+      if(ok) shown++;
+    });
+    document.getElementById('histEmpty').style.display=shown?'none':'block';
+  }
+
+  /* ================= 详情页交互（★C 交付 / 便签 / 取消 / 评价） ================= */
+
+  // 送达交付层
+  function openDeliver(){
+    document.getElementById('deliverNote').value='';
+    openModal('deliverModal');
+  }
+  function fillNote(el){
+    document.getElementById('deliverNote').value=el.textContent;
+  }
+  function confirmDeliver(){
+    const picked=document.querySelector('#deliverModal .pick-row .p.on');
+    const loc=picked?picked.textContent:'';
+    const note=document.getElementById('deliverNote').value.trim();
+    closeModal('deliverModal');
+    advance(loc,note);
+  }
+
+  // 便签层（字数实时计数，超 80 前端直接截断）
+  function openNote(){
+    document.getElementById('noteInput').value='';
+    document.getElementById('noteCount').textContent='0 / 80';
+    openModal('noteModal');
+  }
+  function fillNote2(el){
+    document.getElementById('noteInput').value=el.textContent;
+    updNoteCount();
+  }
+  function updNoteCount(){
+    const v=document.getElementById('noteInput').value;
+    document.getElementById('noteCount').textContent=v.length+' / 80';
+  }
+  function sendNote(){
+    const v=document.getElementById('noteInput').value.trim();
+    if(!v){ toast('写点什么再贴上去吧～',1); return; }
+    closeModal('noteModal');
+    document.getElementById('noteBox').innerHTML='<span class="from">🐻 老板：</span>'+v;
+    toast('便签已贴上 ✍️');
+  }
+
+  // 取消层（原因必选）
+  let cancelReason='';
+  function openCancel(){
+    cancelReason='';
+    document.getElementById('cancelText').value='';
+    document.querySelectorAll('#cancelReasons .p').forEach(x=>x.classList.remove('on'));
+    openModal('cancelModal');
+  }
+  function pickReason(el){
+    el.parentElement.querySelectorAll('.p').forEach(x=>x.classList.remove('on'));
+    el.classList.add('on');
+    cancelReason=el.textContent;
+  }
+  function confirmCancel(){
+    if(!cancelReason){ toast('选一个原因再取消吧',1); return; }
+    closeModal('cancelModal');
+    const st=document.getElementById('detailStatus');
+    st.textContent='已取消'; st.className='tag tag-cancel';
+    document.getElementById('steps').style.opacity='.4';
+    document.getElementById('carryActions').style.display='none';
+    document.getElementById('orderActions').style.display='none';
+    document.getElementById('reviewBlock').style.display='none';
+    toast('已取消 · 本次不计爱心值');
+  }
+
+  // ---------- 吃饭打卡（★F） ----------
+  const ckEmoji=['🍖','🍅','🍜','🥟'];
+  function openCheckin(){
+    if(checkinDone) toast('这顿已经记过啦 · 可改评价');
+    document.getElementById('checkinModal').classList.add('active');
+  }
+  function addPhoto(){
+    const grid=document.getElementById('photoGrid');
+    const cur=grid.querySelectorAll('.ph').length;
+    if(cur>=3){ toast('最多 3 张哦',true); return; }
+    const add=grid.querySelector('.ph-add');
+    const d=document.createElement('div');
+    d.className='ph p'+((cur%3)+1);
+    d.innerHTML='<span>'+ckEmoji[cur%ckEmoji.length]+'</span>'+
+      '<div class="del" onclick="delPhoto(this)">✕</div>';
+    grid.insertBefore(d, add);
+    if(grid.querySelectorAll('.ph').length>=3) add.style.display='none';
+  }
+  function delPhoto(el){
+    const grid=document.getElementById('photoGrid');
+    el.parentElement.remove();
+    const add=grid.querySelector('.ph-add');
+    if(add) add.style.display='flex';
+    if(grid.querySelectorAll('.ph').length===0) toast('至少留一张呀',true);
+  }
+  function pickRate(el){
+    document.querySelectorAll('#rateRow .rate').forEach(r=>r.classList.remove('on'));
+    el.classList.add('on');
+  }
+  function fillCk(el){ document.getElementById('ckText').value=el.textContent; updCkCount(); }
+  function updCkCount(){
+    const v=document.getElementById('ckText').value;
+    document.getElementById('ckCount').textContent=v.length+' / 100';
+  }
+  function submitCheckin(){
+    const n=document.querySelectorAll('#photoGrid .ph').length;
+    const rate=document.querySelector('#rateRow .rate.on');
+    if(!n){ toast('至少拍一张呀',true); return; }
+    if(!rate){ toast('说说今天味道怎么样',true); return; }
+    const label=rate.querySelector('.t').textContent;
+    checkinDone=true;
+    closeModal('checkinModal');
+    const block=document.getElementById('reviewBlock');
+    block.querySelector('label').textContent='已打卡 ✅ 这顿记下来了';
+    block.querySelector('.checkin-cta').innerHTML=
+      '<span>📷 已打卡 · '+label+'</span><span class="r">可修改 ›</span>';
+    toast('记下来啦 · TA 会收到「TA 打卡了：'+label+'」');
   }
 </script>
 </body>
