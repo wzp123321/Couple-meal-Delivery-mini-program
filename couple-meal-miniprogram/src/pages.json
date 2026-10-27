@@ -1,0 +1,16 @@
+{
+  "globalStyle": {
+    "navigationBarBackgroundColor": "#FFF9F2",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF9F2"
+  },
+  "pages": [
+    {
+      "path": "pages/launch/index",
+      "style": {
+        "navigationBarTitleText": "加载中"
+      }
+    }
+  ],
+  "subPackages": []
+}

@@ -1,0 +1,41 @@
+{
+  "task_id": "t-bootstrap-mvp",
+  "task_level": "L",
+  "phase": "P5-develop",
+  "round": 1,
+  "from": "00-orchestrator",
+  "to": "07-developer",
+  "goal": "M0 后端骨架",
+  "signal": "ACCEPTED",
+  "completed_steps": [],
+  "pending_steps": [],
+  "constraints": [],
+  "artifacts": [
+    {
+      "type": "code",
+      "path": "backend/",
+      "version": "v1",
+      "status": "DRAFT"
+    }
+  ],
+  "context_budget": {
+    "must_read": [
+      "docs/design/后端-00-架构.md",
+      "docs/design/00-全局约定.md",
+      "docs/design/01-通用机制.md",
+      "db/schema.sql"
+    ],
+    "must_not_read": [],
+    "max_tokens": 40000,
+    "estimated_tokens": 30000
+  },
+  "open_questions": [],
+  "reject_reasons": [],
+  "timeout_budget": {
+    "max_rounds": 3,
+    "escalate_to": "human"
+  },
+  "seq": 1,
+  "created_at": "2026-10-27T10:15:21.197Z",
+  "ack": null
+}

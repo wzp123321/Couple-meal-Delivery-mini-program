@@ -1,0 +1,17 @@
+/* 前端-00-基础设施.md §6 —— 编译期尺寸 / 间距 token
+ * 颜色不走 SCSS 变量（编译期定死，无法运行时换肤），颜色见 App.vue <style> 的 CSS 变量。
+ * 换算：原型按 375pt 宽，1px = 2rpx。22px 圆角 → 44rpx。
+ */
+
+$radius: 44rpx;        /* 22px 主圆角 */
+$radius-sm: 24rpx;     /* 12px 小圆角 */
+$gap: 24rpx;           /* 标准间距 */
+$gap-lg: 32rpx;        /* 大间距 */
+
+/* 颜色别名（仅供 SCSS 编译期引用，如需要；运行时换肤请用 App.vue 的 CSS 变量） */
+$cream-bg: #FFF9F2;
+$peach: #FFC9B0;
+$orange: #FF9B6A;
+$ink: #4A3F35;
+$ink-2: #8C7B6B;
+$line: #F0E4D8;

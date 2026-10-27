@@ -1,0 +1,22 @@
+{
+  "task_id": "t-bootstrap-mvp",
+  "task_level": "L",
+  "phase": "P0-input",
+  "round": 1,
+  "gates": {},
+  "artifacts": [
+    {
+      "type": "code",
+      "path": "couple-meal-miniprogram/",
+      "version": "v1",
+      "status": "DRAFT"
+    }
+  ],
+  "open_questions": [],
+  "pending_ccr": [],
+  "cost_log": [],
+  "handoff_seq": 2,
+  "created_at": "2026-10-27T09:19:23.009Z",
+  "updated_at": "2026-10-27T10:15:21.426Z",
+  "_round_phase": "P5-develop"
+}

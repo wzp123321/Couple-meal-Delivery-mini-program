@@ -1,0 +1,29 @@
+{
+  "name": "情侣带饭",
+  "appid": "touristappid",
+  "description": "情侣之间约今天吃什么、谁带饭的私密协作微信小程序",
+  "versionName": "0.0.1",
+  "versionCode": "1",
+  "transformPx": false,
+  "app-plus": {
+    "usingComponents": true,
+    "nvueStyleCompiler": "uni-app"
+  },
+  "h5": {
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "appid": "touristappid",
+    "setting": {
+      "urlCheck": true,
+      "es6": true,
+      "minified": true,
+      "postcss": true
+    },
+    "usingComponents": true,
+    "__usePrivacyCheck__": true
+  },
+  "vueVersion": "3"
+}

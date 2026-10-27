@@ -5,3 +5,17 @@
 # 重构前的旧版设计文档（已按模块拆分到 docs/design/），
 # 仅作过渡期对照，确认后可直接删除整个目录。
 docs/_legacy/
+
+# 后端 Maven 构建产物
+backend/target/
+
+# 前端依赖与构建产物（node_modules 体积巨大，dist 可重生成）
+couple-meal-miniprogram/node_modules/
+couple-meal-miniprogram/dist/
+couple-meal-miniprogram/unpackage/
+
+# 系统 / IDE 临时文件
+.DS_Store
+*.log
+.idea/
+.vscode/

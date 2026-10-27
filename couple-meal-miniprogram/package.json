@@ -1,0 +1,32 @@
+{
+  "name": "couple-meal-miniprogram",
+  "version": "0.0.1",
+  "description": "情侣带饭点餐小程序 · M0 前端骨架（uni-app + Vue3 + Vite + TS，编译目标仅微信小程序）",
+  "private": true,
+  "scripts": {
+    "dev:mp-weixin": "uni -p mp-weixin",
+    "dev:h5": "uni",
+    "build:mp-weixin": "uni build -p mp-weixin",
+    "build:h5": "uni build",
+    "type-check": "vue-tsc --noEmit"
+  },
+  "dependencies": {
+    "@dcloudio/uni-app": "3.0.0-5030320261023001",
+    "@dcloudio/uni-app-plus": "3.0.0-5030320261023001",
+    "@dcloudio/uni-components": "3.0.0-5030320261023001",
+    "@dcloudio/uni-h5": "3.0.0-5030320261023001",
+    "@dcloudio/uni-mp-weixin": "3.0.0-5030320261023001",
+    "@dcloudio/uni-stacktracey": "3.0.0-5030320261023001",
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@dcloudio/uni-automator": "3.0.0-5030320261023001",
+    "@dcloudio/vite-plugin-uni": "3.0.0-5030320261023001",
+    "@dcloudio/types": "3.4.31",
+    "@types/node": "^20.14.0",
+    "sass": "^1.77.0",
+    "typescript": "^5.5.0",
+    "vite": "^5.2.0",
+    "vue-tsc": "^2.0.0"
+  }
+}

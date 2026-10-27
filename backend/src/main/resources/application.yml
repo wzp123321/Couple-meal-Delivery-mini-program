@@ -1,0 +1,60 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+spring:
+  application:
+    name: couple-meal
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # 本地默认库名 couple_meal（utf8mb4 / utf8mb4_0900_ai_ci）
+    url: jdbc:mysql://localhost:3306/couple_meal?useUnicode=true&characterEncoding=utf8mb4&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*.xml
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID   # 配合自定义 53bit 雪花（见 MybatisPlusConfig）
+      logic-delete-field:  # 本项目软删统一用 status 枚举，不启用 MP 逻辑删除
+  configuration:
+    map-underscore-to-camel-case: true
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+
+# ============================================================
+# 业务配置（注入项必须从环境变量/保密仓库提供，见 00-全局约定.md §5）
+# 下列 : 后的默认值为本地开发占位，生产必须用环境变量覆盖。
+# ============================================================
+couple-meal:
+  jwt:
+    # 必须来自环境变量，禁止写死进代码库
+    secret: ${JWT_SECRET:dev-only-change-me-in-prod-32bytes-min}
+    expire-days: 30
+  wx:
+    appid: ${WX_APPID:dev-appid}
+    secret: ${WX_SECRET:dev-secret}
+  upload:
+    base-dir: ${UPLOAD_BASE_DIR:/data/upload}
+    url-prefix: ${UPLOAD_URL_PREFIX:https://your-domain/upload}
+    max-raw-size: 10485760
+    max-output-size: 512000
+    max-edge: 1080
+    thumb-edge: 320
+    thumb-max-size: 61440
+    avatar-max-raw-size: 2097152
+    avatar-edge: 256
+    avatar-max-size: 102400
+  plan:
+    order-cutoff-hour: 18
+    max-items: 10
+    max-date-ahead-days: 7
+  schedule:
+    expire-cron: "0 30 2 * * *"
+    auto-complete-cron: "0 0 * * * *"
+    invite-expire-cron: "0 0 * * * *"
+    daily-remind-cron: "0 0 11 * * MON-FRI"
