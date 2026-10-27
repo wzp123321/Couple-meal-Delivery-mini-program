@@ -40,15 +40,15 @@
 |---|---|---|
 | `docs/产品需求文档.md` | 定位、突出点、功能、状态机、数据模型、**§12 交互规范**、**§13 风险合规** | **最高优先级** |
 | `docs/design/README.md` | **设计文档导航**：按任务类型查该读哪几份 | 入口，**先读它** |
-| `docs/design/00-全局约定.md` | D1–D15 决策、数据表一览、鉴权与数据隔离、错误码全表、配置项 | 与 PRD 冲突，以 PRD 为准 |
+| `docs/design/00-全局约定.md` | D1–D15 决策、数据表一览、鉴权与数据隔离、错误码全表、配置项 | 与 PRD 冲突时，以本文 **§1 设计决策** 为准（含理由），未列出的条款以 PRD 为准 |
 | `docs/design/01-通用机制.md` | 状态机与转移白名单、并发幂等、事务边界、定时任务总表 | — |
 | `docs/design/前端-00-基础设施.md` | uni-app 工程结构、请求层、状态管理、样式 tokens、组件、错误码映射 | — |
 | `docs/design/后端-00-架构.md` | 架构图、包结构、分层职责、关键类清单 | 仅 M0 搭骨架时读 |
 | `docs/design/10~90-*/` | 9 个需求目录，每个含 `后端.md`（表 / 接口契约 / 实现 / Job）与 `前端.md`（页面 / 交互 / 状态），与 OpenSpec capability 一一对应 | 与 `db/schema.sql` 冲突，以 schema 为准 |
 | `db/schema.sql` | **数据库结构唯一真相源**（12 张表 / 字段 / 索引 / 约束） | PRD §7 只列表清单与模块归属，**字段级一律以本文件为准** |
-| `docs/开发前准备与详细设计.md` | 环境清单、**接口清单（前后端定稿契约）**、数据字典、异常边界、上线审核、里程碑 | 与 PRD 冲突，以 PRD 为准 |
+| `docs/开发前准备与详细设计.md` | 环境清单、**接口路径总表（§2.4，索引性质）**、数据字典、异常边界、上线审核、里程碑 | 与 PRD 冲突，以 PRD 为准；接口细节以 `design/NN-*/后端.md §2` 为准 |
 | `docs/ui-prototype-cream.html` | 视觉与交互基线（配色 / 圆角 / 微交互） | 交互细节以 PRD §12 为准 |
-| `openspec/specs/` | **行为契约（验收标准）** | 每次变更归档后落库；与 PRD 冲突时以它为准 |
+| `openspec/specs/` | **行为契约（验收标准）** | 每次变更归档后落库；与 PRD 不一致时按 §4.0 硬规则 5 处理（先报告 → 拍板 → 回写 PRD → 再改 specs） |
 | `openspec/changes/<name>/` | 进行中的变更四件套 | proposal / specs / design / tasks |
 | `.workbuddy/memory/MEMORY.md` | 已拍板决策记忆（防跨会话漂移） | 只读参考，**不是交付物** |
 
@@ -204,7 +204,8 @@ Agent 只读自己 `context_budget` 里的东西，**编排者不得转发全量
 
 ## 5. 硬规则（违反即返工）
 
-1. **契约先行**：先有 LOCKED 的 `interface-contract.md`，再写详细设计。契约是唯一真相源。
+1. **契约先行**：接口契约的唯一落点是 `docs/design/NN-*/后端.md §2`（入参 / 出参 / 错误码只在那里定义），前端的 `前端.md` 只写「页面 → 接口」映射。
+   M / L 档可在 `.workbuddy/runs/` 下先出 `interface-contract.md` 做双方对齐，但**结论必须回写 `后端.md §2`**，只存在于 runs 里的契约视为未锁定。
 2. **改契约走 CCR**：任何一方发现契约不合理 → 提 `contract-change-request` 给 05 裁决，**不得私自改**。
 3. **假设必须给路径**：写「复用既有 X / 依赖已有 Y」必须附代码库路径；给不出就标 `UNVERIFIED`，**不得进入下游文档**。
    > 本项目当前没有任何业务代码，因此**一切「复用既有」默认都是 UNVERIFIED**，需自行新建。
@@ -242,7 +243,7 @@ Agent 只读自己 `context_budget` 里的东西，**编排者不得转发全量
 > 骨架尚未创建，以下为**已定方向**，实现时不得偏离；如需调整走 CCR。
 
 - **包名**：`com.couplemeal`
-- **分层**：`controller / service / mapper / entity / dto / common`
+- **分层**：`common / config / controller / service / domain / mapper / entity / job`（不设 `dto` 包，请求/响应对象就近放各层；详见 `docs/design/后端-00-架构.md §2`）
 - **接口前缀**：`/api`
 - **统一返回**：`{ "code": 0, "msg": "ok", "data": ... }`，错误码表见配套文档 §2.3
 - **鉴权**：`uni.login` → code 换 openid → 自签 token → 请求头 `Authorization` → 拦截器注入当前用户与 `couple_id`
