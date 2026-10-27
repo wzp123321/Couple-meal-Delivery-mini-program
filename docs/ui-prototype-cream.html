@@ -549,13 +549,13 @@
         <div class="f">忌口⚠</div>
         <div class="f">荤</div><div class="f">素</div><div class="f">汤</div><div class="f">主食</div>
       </div>
-      <div class="dish"><div><div class="nm">红烧肉</div><div class="cat">荤 · TA爱吃</div></div>
+      <div class="dish" onclick="editDish(this)"><div><div class="nm">红烧肉</div><div class="cat">荤 · TA爱吃</div></div>
         <div class="marks"><span class="mk mk-star">★常点</span></div></div>
-      <div class="dish"><div><div class="nm">番茄蛋汤</div><div class="cat">汤 · 我常做</div></div>
+      <div class="dish" onclick="editDish(this)"><div><div class="nm">番茄蛋汤</div><div class="cat">汤 · 我常做</div></div>
         <div class="marks"><span class="mk mk-star">★常点</span></div></div>
-      <div class="dish"><div><div class="nm">香菜</div><div class="cat">配菜 · TA不吃</div></div>
+      <div class="dish" onclick="editDish(this)"><div><div class="nm">香菜</div><div class="cat">素 · TA不吃</div></div>
         <div class="marks"><span class="mk mk-avoid">⚠忌口</span></div></div>
-      <div class="dish"><div><div class="nm">糖醋排骨</div><div class="cat">荤 · 我爱吃</div></div>
+      <div class="dish" onclick="editDish(this)"><div><div class="nm">糖醋排骨</div><div class="cat">荤 · 我爱吃</div></div>
         <div class="marks"><span class="mk mk-star">★常点</span></div></div>
       <div class="fab" onclick="openEdit()">＋</div>
     </section>
@@ -964,7 +964,6 @@
             <div class="p" onclick="pickOne(this)">素</div>
             <div class="p" onclick="pickOne(this)">汤</div>
             <div class="p" onclick="pickOne(this)">主食</div>
-            <div class="p" onclick="pickOne(this)">配菜</div>
           </div>
         </div>
         <div class="f2">
@@ -978,7 +977,7 @@
           <label>标记</label>
           <div class="pick-row">
             <div class="p" onclick="pickOne(this)">★ 常点</div>
-            <div class="p" onclick="pickOne(this)">🌱 想试试</div>
+            <div class="p" style="opacity:.45;cursor:not-allowed">🌱 想试试（二期）</div>
           </div>
         </div>
         <div class="f2">
@@ -994,8 +993,24 @@
           </div>
         </div>
         <div style="display:flex;gap:10px;margin-top:18px">
+          <button class="btn btn-ghost" id="dishDelBtn" style="display:none;color:#D97757" onclick="askDeleteDish()">删除</button>
           <button class="btn btn-ghost" onclick="closeModal('editModal')">取消</button>
           <button class="btn btn-primary" onclick="saveDish()">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ 删除菜品确认弹层（L3 强提醒） ============ -->
+    <div class="modal" id="deleteDishModal">
+      <div class="sheet">
+        <h3>删掉「<span id="delDishName">这道菜</span>」？</h3>
+        <div style="font-size:13px;color:var(--ink-3);line-height:1.8;margin:10px 0 4px">
+          删了就不能再从菜单里选它了。<br>
+          <b>之前点过的记录和口味画像都不受影响</b>——那些是已经发生过的事。
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px">
+          <button class="btn btn-ghost" onclick="closeModal('deleteDishModal')">再想想</button>
+          <button class="btn btn-primary" onclick="confirmDeleteDish()">删除</button>
         </div>
       </div>
     </div>
@@ -1173,7 +1188,7 @@
     {n:'红烧肉',cat:'荤',avoid:false},
     {n:'番茄蛋汤',cat:'汤',avoid:false},
     {n:'糖醋排骨',cat:'荤',avoid:false},
-    {n:'香菜',cat:'配菜',avoid:true},
+    {n:'香菜',cat:'素',avoid:true},
     {n:'青椒',cat:'素',avoid:false},
   ];
   let picked=[]; let pickTarget='order';
@@ -1315,7 +1330,23 @@
   // 菜品编辑
   function openEdit(){
     document.getElementById('editName').value='';
+    document.getElementById('dishDelBtn').style.display='none';
     openModal('editModal');
+  }
+  function editDish(el){
+    const nm=el.querySelector('.nm').textContent.trim();
+    document.getElementById('editName').value=nm;
+    document.getElementById('dishDelBtn').style.display='block';
+    openModal('editModal');
+  }
+  function askDeleteDish(){
+    document.getElementById('delDishName').textContent=document.getElementById('editName').value.trim()||'这道菜';
+    closeModal('editModal');
+    openModal('deleteDishModal');
+  }
+  function confirmDeleteDish(){
+    closeModal('deleteDishModal');
+    toast('已删除，历史记录保留');
   }
   function pickOne(el){
     el.parentElement.querySelectorAll('.p').forEach(x=>x.classList.remove('on'));

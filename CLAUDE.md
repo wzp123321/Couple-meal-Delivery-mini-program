@@ -12,10 +12,11 @@
 | 2 | `openspec/changes/bootstrap-mvp/` | **当前变更的规格契约**（proposal / specs / design / tasks） |
 | 3 | `docs/产品需求文档.md` | 产品背景与细节（14 章） |
 | 4 | `docs/design/README.md` | 设计导航：按任务查该读哪几份（**按模块读，禁止全量读**） |
-| 5 | `docs/design/00-全局约定.md` + 该需求目录下**一份**文档 | 全局约定（D1–D15 / 分层 / 鉴权 / 错误码）+ `后端.md`（表·接口·实现）或 `前端.md`（页面·交互·状态） |
+| 5 | `docs/design/00-全局约定.md` + 该需求目录下**一份**文档 | 全局约定（D1–D16 / 分层 / 鉴权 / 错误码）+ `后端.md`（表·接口·实现）或 `前端.md`（页面·交互·状态） |
 | 6 | `db/schema.sql` | 表结构（12 张，可直接执行；**字段级唯一真相源**） |
 | 7 | `docs/开发前准备与详细设计.md` | 环境清单 / 接口路径总表（索引）/ 数据字典 / 上线审核 / 里程碑 |
-| 8 | `docs/ui-prototype-cream.html` | 视觉与交互基线（18 屏 + 8 弹层） |
+| 8 | `docs/ui-prototype-cream.html` | 视觉与交互基线（18 屏 + 9 弹层） |
+| 9 | `docs/部署与运维.md` | 服务器规格 / Nginx / systemd / 备份 / 上线检查清单（**仅部署排障时读**） |
 
 **当前状态：需求与交互冻结，OpenSpec 规格已就绪（4/4 产物、validate 通过），尚未写任何业务代码。**
 
@@ -65,6 +66,7 @@ openspec/                    OpenSpec 规格与变更（设计 → 开发 → �
 docs/                        产品与技术文档（交付物）
   ├── 产品需求文档.md         产品背景与细节
   ├── 开发前准备与详细设计.md
+  ├── 部署与运维.md           从空服务器到上线 + 排障
   ├── design/                 设计文档：1 个需求 1 个目录，内含 后端.md / 前端.md
   └── ui-prototype-cream.html
 .workbuddy/
