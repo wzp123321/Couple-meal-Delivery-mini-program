@@ -9,6 +9,9 @@ docs/_legacy/
 # 后端 Maven 构建产物
 backend/target/
 
+# 后端集成自测的运行时临时目录（itest.sh 自动生成，结尾清理）
+backend/itest/.work/
+
 # 前端依赖与构建产物（node_modules 体积巨大，dist 可重生成）
 couple-meal-miniprogram/node_modules/
 couple-meal-miniprogram/dist/

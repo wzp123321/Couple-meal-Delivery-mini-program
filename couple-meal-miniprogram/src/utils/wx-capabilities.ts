@@ -11,15 +11,15 @@
  */
 export function wxLogin(): Promise<{ code: string }> {
   return new Promise((resolve, reject) => {
-    // #ifndef MP-WEIXIN
-    reject(new Error('wxLogin 仅微信小程序端可用'))
-    return
-    // #endif
+    // #ifdef MP-WEIXIN
     uni.login({
       provider: 'weixin',
       success: (res) => resolve({ code: res.code }),
       fail: (err) => reject(err),
     })
+    // #else
+    reject(new Error('wxLogin 仅微信小程序端可用'))
+    // #endif
   })
 }
 
