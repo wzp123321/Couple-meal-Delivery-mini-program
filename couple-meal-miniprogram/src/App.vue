@@ -3,9 +3,11 @@ import { onLaunch, onShow } from '@dcloudio/uni-app'
 import { setupGuard } from '@/utils/guard'
 import { restoreLogin } from '@/stores/app'
 import { bootstrapApp } from '@/utils/bootstrap'
+import { initPrivacy } from '@/utils/privacy'
 
 // 冷启动：恢复登录态 → 注册全局路由门控 → 静默恢复并门控跳转（10-关系绑定/前端.md §2）
 onLaunch(() => {
+  initPrivacy()
   restoreLogin()
   setupGuard()
   bootstrapApp()

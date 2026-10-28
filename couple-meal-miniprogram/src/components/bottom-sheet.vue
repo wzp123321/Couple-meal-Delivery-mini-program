@@ -50,6 +50,9 @@ function onMask(): void {
   border-radius: 32rpx 32rpx 0 0;
   padding: 40rpx 32rpx calc(40rpx + env(safe-area-inset-bottom));
   box-sizing: border-box;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
   animation: bs-up 0.24s ease-out;
 }
 @keyframes bs-up {
@@ -71,6 +74,9 @@ function onMask(): void {
   font-size: 28rpx;
   color: var(--ink-2);
   line-height: 1.6;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .bs-footer {
   margin-top: 32rpx;
