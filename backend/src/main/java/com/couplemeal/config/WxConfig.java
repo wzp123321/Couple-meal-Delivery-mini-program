@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -46,9 +47,18 @@ public class WxConfig {
         return secret;
     }
 
+    /** 出网调用（微信）超时上限：连接 2s、读取 3s，避免微信不可达时无限阻塞主流程（如打卡提交同步审核） */
+    private static final int WX_CONNECT_TIMEOUT_MS = 2000;
+    private static final int WX_READ_TIMEOUT_MS = 3000;
+
     @Bean
     public RestTemplate wxRestTemplate() {
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(WX_CONNECT_TIMEOUT_MS);
+        factory.setReadTimeout(WX_READ_TIMEOUT_MS);
+        restTemplate.setRequestFactory(factory);
+        return restTemplate;
     }
 
     /** access_token 缓存（微信限制每日获取次数，需缓存并提前刷新） */
