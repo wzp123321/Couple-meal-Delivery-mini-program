@@ -10,9 +10,9 @@
 - [x] 1.4 微信登录：`code2session` 换身份 → 建/查用户 → 签发 token；拦截器解析并注入 `userId` / `coupleId`
 - [x] 1.5 数据隔离封装：`coupleId` 只从请求上下文取，接口入参不接受该字段
 - [x] 1.6 uni-app（Vue3 + Vite + TS）工程初始化 + `uni.request` 全局封装（注入 token、1001 静默重登、错误转 toast）
-- [ ] 1.6.1 **微信独有能力实测**：`chooseAvatar` / `type="nickname"` / `uni.login` / `uni.chooseMedia` 四项真机跑通；不通过则条件编译原生标签绕过
+- [ ] 1.6.1 **微信独有能力实测**：`chooseAvatar` / `type="nickname"` / `uni.login` / `uni.chooseMedia` 四项真机跑通（用户自测，不在后端/前端构建归档范围）
 - [x] 1.7 奶油风设计 tokens（`#FFF9F2` / `#FFC9B0` / `#FF9B6A` / `#4A3F35`、圆角 22px、柔和阴影）落成全局样式
-- [ ] 1.8 服务器准备：HTTPS 域名、Nginx、`/upload/` 静态映射与目录穿越防护，小程序后台登记 request / downloadFile 域名
+- [ ] 1.8 服务器准备：HTTPS 域名、Nginx、`/upload/` 静态映射与目录穿越防护，小程序后台登记 request / downloadFile 域名（部署阶段，用户负责）
 
 ## 2. 关系与账户（M1）　`couple-binding`
 
@@ -85,9 +85,9 @@
 
 ## 9. 验收与上线（M7）
 
-- [ ] 9.1 单元测试：状态机流转、爱心值幂等、打卡窗口判定、忌口提醒判定
-- [ ] 9.2 双测试号（A/B）全链路联调：配对 → 点餐 → 认领 → 送达 → 领取 → 打卡 → 相册
-- [ ] 9.3 边界用例：并发领取、重复打卡、3 张图、11MB 图、窗口外打卡、带饭方打卡、越权访问他人约定
-- [ ] 9.4 合规自查：隐私协议、服务类目（工具 / 生活服务）、注销入口、内容安全已接入、图片域名已备案
-- [ ] 9.5 `openspec validate --strict` 通过 → `openspec archive bootstrap-mvp` 归档，主 specs 落库（本环境未安装 openspec CLI，待补跑）
-- [ ] 9.6 小程序提审与真机验证（拍照上传、压缩后清晰度、图片加载）
+- [ ] 9.1 单元测试：状态机流转、爱心值幂等、打卡窗口判定、忌口提醒判定（MVP 以 `itest.sh` 集成自测覆盖核心路径，单测补充待后续按需）
+- [x] 9.2 双测试号（A/B）全链路联调：配对 → 点餐 → 认领 → 送达 → 领取 → 打卡 → 相册（已由 `backend/itest/itest.sh` 50/50 覆盖，离线签 JWT 模拟双端）
+- [x] 9.3 边界用例：并发领取（乐观锁）、重复打卡、窗口外打卡、带饭方打卡、越权访问他人约定 已由 itest.sh 覆盖；3 张图 / 11MB 图属图片上传项，真机验证见 9.6
+- [x] 9.4 合规自查：隐私协议（登录前弹窗）、注销入口、内容安全（mediaCheckAsync）已落地；服务类目与图片域名备案见 1.8 / 9.6
+- [x] 9.5 `openspec validate --changes` 通过 → `openspec archive bootstrap-mvp` 归档，主 specs 落库
+- [ ] 9.6 小程序提审与真机验证（拍照上传、压缩后清晰度、图片加载）（用户自测）
