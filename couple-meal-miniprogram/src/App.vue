@@ -2,11 +2,13 @@
 import { onLaunch, onShow } from '@dcloudio/uni-app'
 import { setupGuard } from '@/utils/guard'
 import { restoreLogin } from '@/stores/app'
+import { bootstrapApp } from '@/utils/bootstrap'
 
-// 冷启动：恢复登录态 + 注册全局路由门控（见 前端-00-基础设施.md §5.4）
+// 冷启动：恢复登录态 → 注册全局路由门控 → 静默恢复并门控跳转（10-关系绑定/前端.md §2）
 onLaunch(() => {
   restoreLogin()
   setupGuard()
+  bootstrapApp()
 })
 
 // 切前台：同步未读数（接口 5.3 在 M4 落地，这里只搭路径）
@@ -37,5 +39,15 @@ page {
   background: var(--cream-bg);
   color: var(--ink);
   font-size: 28rpx;
+  line-height: 1.5;
+}
+
+/* 全局卡片外观：白底 + 主圆角 + 柔和阴影（$radius / soft-shadow 来自 uni.scss）。
+ * 各页面卡片直接 class="card"，不要自己再写一遍圆角和阴影。 */
+.card {
+  background: #fff;
+  border-radius: $radius;
+  @include soft-shadow(2);
+  overflow: hidden;
 }
 </style>

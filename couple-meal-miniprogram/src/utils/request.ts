@@ -9,7 +9,7 @@ const inflight = new Map<string, Promise<unknown>>()
 interface Options {
   url: string
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE'
-  data?: Record<string, unknown>
+  data?: Record<string, any>
   auth?: boolean
   silent?: boolean
   _retried?: boolean

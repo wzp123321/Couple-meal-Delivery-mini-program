@@ -28,4 +28,20 @@ public class StorageProperties {
     private long avatarMaxRawSize = 2_097_152L;
     private int avatarEdge = 256;
     private long avatarMaxSize = 102_400L;
+
+    /**
+     * 将库内相对路径（形如 /upload/avatar/xxx.jpg）解析为磁盘绝对路径。
+     * 规则：baseDir + 去掉 "/upload" 前缀后的剩余部分。
+     * 落盘/删除文件时统一走本方法，避免路径拼接错误。
+     */
+    public String resolveAbsolute(String relativePath) {
+        if (relativePath == null) {
+            return null;
+        }
+        String base = baseDir.endsWith("/") ? baseDir.substring(0, baseDir.length() - 1) : baseDir;
+        if (relativePath.startsWith("/upload")) {
+            return base + relativePath.substring("/upload".length());
+        }
+        return base + relativePath;
+    }
 }

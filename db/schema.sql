@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS `couple` (
   `nickname_b`   VARCHAR(32)     NULL                COMMENT 'B 对 A 的专属称呼',
   `anniversary`  DATE            NULL                COMMENT '纪念日',
   `theme`        VARCHAR(16) NOT NULL DEFAULT 'cream' COMMENT '主题色标识',
+  `remind_enabled` TINYINT   NOT NULL DEFAULT 1       COMMENT '每日提醒开关 1开 0关',
   `status`       TINYINT     NOT NULL DEFAULT 1      COMMENT '1有效 0已解绑',
   `unbound_time` DATETIME        NULL                COMMENT '解绑时间',
   `create_time`  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

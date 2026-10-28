@@ -8,15 +8,15 @@
     {
       "type": "code",
       "path": "couple-meal-miniprogram/",
-      "version": "v1",
+      "version": "v2",
       "status": "DRAFT"
     }
   ],
   "open_questions": [],
   "pending_ccr": [],
   "cost_log": [],
-  "handoff_seq": 2,
+  "handoff_seq": 4,
   "created_at": "2026-10-27T09:19:23.009Z",
-  "updated_at": "2026-10-27T10:15:21.426Z",
+  "updated_at": "2026-10-27T11:05:28.891Z",
   "_round_phase": "P5-develop"
 }

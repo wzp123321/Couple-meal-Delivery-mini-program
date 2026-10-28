@@ -6,6 +6,11 @@ server:
 spring:
   application:
     name: couple-meal
+  servlet:
+    multipart:
+      # 与 couple-meal.upload.max-raw-size(10MB) 对齐；默认 1MB 会直接拒绝手机原图
+      max-file-size: 10MB
+      max-request-size: 10MB
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     # 本地默认库名 couple_meal（utf8mb4 / utf8mb4_0900_ai_ci）

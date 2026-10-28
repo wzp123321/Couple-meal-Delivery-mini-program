@@ -31,6 +31,9 @@ public class Couple implements Serializable {
     private LocalDate anniversary;
     private String theme;
 
+    /** 每日提醒开关（1开 0关），见 10-关系绑定/后端.md §2 couple/settings */
+    private Boolean remindEnabled;
+
     /** 1有效 0已解绑（逻辑删除统一用 status，不引 MP 逻辑删除） */
     private Integer status;
 

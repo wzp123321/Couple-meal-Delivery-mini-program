@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * 鉴权控制器：微信登录（免 token）。
+ * 鉴权控制器：微信登录（免 token）+ 当前登录态探活。
  *
  * <p>路径：POST /api/auth/login（context-path=/api）。
- * 返回体 data 为令牌字符串；首次登录与重复登录都只返回令牌，M0 不含关系/资料逻辑（见 M1）。
+ * 登录返回契约字段 {token, userId, nickname, avatar, hasCouple}（见 后端.md §3.1 / §2 契约）。
  */
 @RestController
 @RequestMapping("/auth")
@@ -26,9 +26,8 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/login")
-    public R<String> login(@Valid @RequestBody LoginReq req) {
-        String token = authService.login(req.getCode());
-        return R.ok(token);
+    public R<AuthService.LoginResp> login(@Valid @RequestBody LoginReq req) {
+        return R.ok(authService.login(req.getCode(), req.getAgreedPrivacy()));
     }
 
     /**
@@ -47,6 +46,9 @@ public class AuthController {
     public static class LoginReq {
         @NotBlank(message = "登录凭证不能为空")
         private String code;
+
+        /** 隐私协议同意标记；未同意不得登录（后端.md §3.1） */
+        private Boolean agreedPrivacy;
     }
 
     @Data

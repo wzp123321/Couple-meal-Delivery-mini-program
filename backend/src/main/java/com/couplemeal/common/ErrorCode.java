@@ -27,6 +27,8 @@ public enum ErrorCode {
     WEEKEND_NOT_ALLOWED(1009, "只能约工作日"),
     TOO_LATE_TODAY(1010, "今天太晚了，约明天吧"),
     DATE_OUT_OF_RANGE(1011, "日期超出可约范围"),
+    NICKNAME_INVALID(1012, "昵称不太合适，换一个试试"),
+    PET_NAME_INVALID(1013, "起个 2–12 字的称呼吧"),
 
     // ===== 2xxx 约定 / 菜单 =====
     MENU_ITEM_NOT_FOUND(2001, "菜品不存在"),
@@ -52,9 +54,10 @@ public enum ErrorCode {
     // ===== 5xxx 微信 =====
     WX_API_FAILED(5001, "微信接口调用失败，请稍后再试"),
 
-    // ===== 框架级兜底（§4 未列，CCR 候选） =====
+    // ===== 框架级兜底（§4 未列业务归属，全局通用） =====
     PARAM_INVALID(4000, "参数有误"),
-    SYS_ERROR(5000, "系统开小差了，请稍后再试");
+    SYS_ERROR(5000, "系统开小差了，请稍后再试"),
+    SERVICE_BUSY(5002, "服务繁忙，请稍后再试");
 
     private final int code;
     private final String msg;

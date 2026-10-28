@@ -2,15 +2,139 @@
   "globalStyle": {
     "navigationBarBackgroundColor": "#FFF9F2",
     "navigationBarTextStyle": "black",
-    "backgroundColor": "#FFF9F2"
+    "navigationBarTitleText": "",
+    "backgroundColor": "#FFF9F2",
+    "backgroundTextStyle": "dark"
   },
   "pages": [
     {
       "path": "pages/launch/index",
       "style": {
-        "navigationBarTitleText": "加载中"
+        "navigationBarTitleText": "加载中",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/login/index",
+      "style": {
+        "navigationBarTitleText": "登录",
+        "navigationStyle": "custom",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/pair/index",
+      "style": {
+        "navigationBarTitleText": "配对",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/today/index",
+      "style": {
+        "navigationBarTitleText": "今天",
+        "navigationBarBackgroundColor": "#FFF9F2",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/plan/create",
+      "style": {
+        "navigationBarTitleText": "发起约定",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/plan/detail",
+      "style": {
+        "navigationBarTitleText": "约定详情",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/menu/index",
+      "style": {
+        "navigationBarTitleText": "菜单",
+        "navigationBarBackgroundColor": "#FFF9F2",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/message/index",
+      "style": {
+        "navigationBarTitleText": "消息",
+        "navigationBarBackgroundColor": "#FFF9F2",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/me/index",
+      "style": {
+        "navigationBarTitleText": "我的",
+        "navigationBarBackgroundColor": "#FFF9F2",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/settings/index",
+      "style": {
+        "navigationBarTitleText": "设置",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/album/index",
+      "style": {
+        "navigationBarTitleText": "饭桌相册",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/history/index",
+      "style": {
+        "navigationBarTitleText": "历史",
+        "navigationBarBackgroundColor": "#FFF9F2",
+        "enablePullDownRefresh": true
+      }
+    },
+    {
+      "path": "pages/week/index",
+      "style": {
+        "navigationBarTitleText": "周历",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
+    },
+    {
+      "path": "pages/shopping/index",
+      "style": {
+        "navigationBarTitleText": "采购清单",
+        "navigationBarBackgroundColor": "#FFF9F2"
       }
     }
   ],
+  "tabBar": {
+    "color": "#8C7B6B",
+    "selectedColor": "#FF9B6A",
+    "backgroundColor": "#FFF9F2",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/today/index",
+        "text": "今天"
+      },
+      {
+        "pagePath": "pages/menu/index",
+        "text": "菜单"
+      },
+      {
+        "pagePath": "pages/message/index",
+        "text": "消息"
+      },
+      {
+        "pagePath": "pages/me/index",
+        "text": "我的"
+      }
+    ]
+  },
   "subPackages": []
 }
