@@ -9,6 +9,7 @@ import com.couplemeal.domain.enums.NotifyType;
 import com.couplemeal.entity.Notification;
 import com.couplemeal.mapper.NotificationMapper;
 import com.couplemeal.service.NotifyService;
+import com.couplemeal.service.SubscribeMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
@@ -45,6 +46,7 @@ public class NotifyServiceImpl implements NotifyService {
     public static final String DAILY_REMIND_CONTENT = "TA 还等着呢，有空的话就带一份吧";
 
     private final NotificationMapper notificationMapper;
+    private final SubscribeMessageService subscribeMessageService;
 
     // ===================== 写入（唯一入口） =====================
 
@@ -67,6 +69,8 @@ public class NotifyServiceImpl implements NotifyService {
             // 同约定 + 同类型 + 同收件人已发过，静默忽略
             log.debug("通知重复推送已忽略 receiverId={} planId={} type={}", receiverId, planId, type);
         }
+        // 订阅消息是站内通知的增量通道：失败仅记录，不阻断主流程（也不新增站内行）
+        subscribeMessageService.send(receiverId, type, title, content);
     }
 
     @Override

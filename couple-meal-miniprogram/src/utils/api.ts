@@ -91,3 +91,33 @@ export function upload<T>(url: string, filePath: string, name = 'file'): Promise
     })
   })
 }
+
+/* ============================================================
+ * 石头剪刀布协商（phase-2）
+ * 端点前缀 /api/rps，与后端 RpsController 一一对应。
+ * ========================================================== */
+
+/** 发起 / 复用进行中对局（幂等），返回对局视图 */
+export function createRps(req: RpsCreateReq): Promise<RpsGameVO> {
+  return post<RpsGameVO>('/api/rps/create', req)
+}
+
+/** 当前用户对局出拳，返回出拳后的对局视图 */
+export function throwRps(gameId: number, req: RpsThrowReq): Promise<RpsGameVO> {
+  return post<RpsGameVO>(`/api/rps/${gameId}/throw`, req)
+}
+
+/** 采纳结果，生成「输家主动带」约定（幂等），返回 planId */
+export function adoptRps(gameId: number, req: RpsAdoptReq = {}): Promise<RpsAdoptResp> {
+  return post<RpsAdoptResp>(`/api/rps/${gameId}/adopt`, req)
+}
+
+/** 按 id 取对局视图（已完成的对局也能取，便于回到页面继续采纳） */
+export function getRps(gameId: number): Promise<RpsGameVO> {
+  return get<RpsGameVO>(`/api/rps/${gameId}`)
+}
+
+/** 取 (couple, date, meal_type) 进行中的对局，无则返回 null */
+export function currentRps(mealType: MealType, planDate: string): Promise<RpsGameVO | null> {
+  return get<RpsGameVO | null>('/api/rps/current', { mealType, planDate })
+}

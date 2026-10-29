@@ -12,6 +12,7 @@ import { appState } from '@/stores/app'
 import { toast } from '@/utils/toast'
 import type {
   AvoidLevel,
+  MealType,
   MenuItem,
   MenuListResp,
   PlanCreateReq,
@@ -71,6 +72,7 @@ const source = ref<PlanSource>(0)
 const planDate = ref('')
 const dishes = ref<DishDraft[]>([])
 const remark = ref('')
+const mealType = ref<MealType>(1) // 默认午饭（PRD §9 Q3），晚饭二期可切换
 const submitting = ref(false)
 
 const isOrderer = computed(() => source.value === 0)
@@ -296,7 +298,7 @@ function validate(): string {
 
 function buildBody(): PlanCreateReq {
   const body: PlanCreateReq = {
-    mealType: 1, // MVP 仅午饭（PRD §9 Q3）
+    mealType: mealType.value,
     source: source.value,
     planDate: planDate.value,
     items: dishes.value.map((d) =>
@@ -452,12 +454,12 @@ onHide(() => {
       <view class="tip">{{ dateHint }}</view>
     </view>
 
-    <!-- 时段：MVP 仅午饭，晚饭二期 -->
+    <!-- 时段：午饭 / 晚饭，可切换，默认午饭 -->
     <view class="card block">
       <text class="label">时段</text>
       <view class="seg">
-        <view class="seg-item on">🍱 午饭</view>
-        <view class="seg-item off">🌙 晚饭（二期）</view>
+        <view class="seg-item" :class="{ on: mealType === 1 }" @tap="mealType = 1">🍱 午饭</view>
+        <view class="seg-item" :class="{ on: mealType === 2 }" @tap="mealType = 2">🌙 晚饭</view>
       </view>
     </view>
 
@@ -755,10 +757,6 @@ onHide(() => {
   background: var(--peach);
   color: var(--ink);
   font-weight: 700;
-}
-.seg-item.off {
-  background: var(--line);
-  color: #b9ab9c;
 }
 
 .ta {

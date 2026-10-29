@@ -277,6 +277,41 @@ CREATE TABLE IF NOT EXISTS `meal_checkin_image` (
   UNIQUE KEY `uk_meal_checkin_image_trace` (`trace_id`) COMMENT '异步回调按 trace_id 定位单张'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='打卡图片明细（审核粒度）';
 
+-- ------------------------------------------------------------
+-- 13. 石头剪刀布对局（phase-2 协商谁带饭）
+--     rps_game 一局一条；rps_round 每回合一条（平局重出保留历史）
+--     采纳后才生成约定，故对局与约定解耦，plan_id 可空
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `rps_game` (
+  `id`            BIGINT      NOT NULL                COMMENT '主键（53bit 雪花 ID）',
+  `couple_id`     BIGINT      NOT NULL                COMMENT '关系隔离键',
+  `plan_date`     DATE        NOT NULL                COMMENT '约定日期（工作日）',
+  `meal_type`     TINYINT     NOT NULL DEFAULT 1       COMMENT '1午饭 2晚饭',
+  `initiator_id`  BIGINT      NOT NULL                COMMENT '发起方 user_id',
+  `status`        TINYINT     NOT NULL DEFAULT 0       COMMENT '0进行中 1已完成',
+  `winner_id`     BIGINT          NULL                COMMENT '胜方 user_id（完成时写入）',
+  `plan_id`       BIGINT          NULL                COMMENT '采纳后生成的约定 id（未采纳为空）',
+  `current_round` INT         NOT NULL DEFAULT 1       COMMENT '当前回合号，平局重出自增',
+  `create_time`   DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time`   DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  KEY `idx_rps_game_couple_date_type` (`couple_id`, `plan_date`, `meal_type`, `status`) COMMENT '进行中对局幂等复用'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='石头剪刀布对局';
+
+CREATE TABLE IF NOT EXISTS `rps_round` (
+  `id`         BIGINT      NOT NULL                 COMMENT '主键（53bit 雪花 ID）',
+  `game_id`    BIGINT      NOT NULL                 COMMENT '所属对局',
+  `round_no`   INT         NOT NULL DEFAULT 1       COMMENT '回合号（与 rps_game.current_round 对齐）',
+  `choice_a`   TINYINT         NULL                 COMMENT 'user_a 出拳 1石头 2剪刀 3布，未出为空',
+  `choice_b`   TINYINT         NULL                 COMMENT 'user_b 出拳 1石头 2剪刀 3布，未出为空',
+  `result`     TINYINT     NOT NULL DEFAULT 0       COMMENT '0待分 1A胜 2B胜 3平',
+  `create_time` DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_time` DATETIME   NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_rps_round_game_no` (`game_id`, `round_no`),
+  KEY `idx_rps_round_game` (`game_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='石头剪刀布单回合';
+
 -- ============================================================
 -- 设计补充说明（相对初版 PRD §7 的 9 张表）
 --   PRD v0.9 起 §7 已同步为 12 张表，与本文表数、字段一一对应；

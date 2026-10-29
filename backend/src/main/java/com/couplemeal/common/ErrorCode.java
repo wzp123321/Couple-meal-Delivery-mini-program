@@ -54,6 +54,12 @@ public enum ErrorCode {
     // ===== 5xxx 微信 =====
     WX_API_FAILED(5001, "微信接口调用失败，请稍后再试"),
 
+    // ===== 6xxx 石头剪刀布协商 =====
+    RPS_GAME_NOT_FOUND(6001, "这局石头剪刀布不见了"),
+    RPS_ALREADY_THROWN(6002, "这一局你已经出过拳了"),
+    RPS_GAME_FINISHED(6003, "这局已经分胜负啦"),
+    RPS_INVALID_CHOICE(6004, "出拳只能是石头、剪刀或布"),
+
     // ===== 框架级兜底（§4 未列业务归属，全局通用） =====
     PARAM_INVALID(4000, "参数有误"),
     SYS_ERROR(5000, "系统开小差了，请稍后再试"),

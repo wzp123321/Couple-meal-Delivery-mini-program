@@ -1,5 +1,6 @@
 package com.couplemeal.common.util;
 
+import com.couplemeal.domain.enums.MealType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -13,21 +14,24 @@ import java.time.LocalDateTime;
  * <p>规则：
  * <ul>
  *   <li>{@link #isWorkday(LocalDate)}：周一至周五为 true（不做法定节假日，MVP 取舍）；</li>
- *   <li>{@link #isTodayOrderClosed(LocalDateTime)}：工作日 {@code order-cutoff-hour} 点及之后，
- *       当日不可再发起约定（失败码 1010）；非工作日返回 true（本身就不能约，约不了当天）。</li>
+ *   <li>{@link #isTodayOrderClosed(LocalDateTime, MealType)}：工作日对应餐段的截止小时及之后，
+ *       当日不可再发起该餐段约定（失败码 1010 TOO_LATE_TODAY）；非工作日返回 true（本身就不能约）。</li>
  * </ul>
  *
  * <p>调用方式：纯静态，Job / Service 直接 {@code WorkdayUtil.isWorkday(date)}，
- * 无需注入 Bean。截止小时由 {@code couple-meal.plan.order-cutoff-hour}（默认 18）
- * 通过内部 Binder 组件启动时写入静态字段；若未被扫描到，回落到默认值。
+ * 无需注入 Bean。截止小时由 {@code couple-meal.plan.cutoff.lunch}(默认 11) /
+ * {@code couple-meal.plan.cutoff.dinner}(默认 18) 通过内部 Binder 组件启动时写入静态字段；
+ * 未配置时回落到默认值，无需改动 application.yml。
  */
 public final class WorkdayUtil {
 
-    /** 默认截止小时，需与 application.yml couple-meal.plan.order-cutoff-hour 保持一致 */
-    private static final int DEFAULT_CUTOFF_HOUR = 18;
+    /** 午饭默认截止小时（11:00 后不可约当日午饭） */
+    private static final int DEFAULT_LUNCH_CUTOFF_HOUR = 11;
+    /** 晚饭默认截止小时（18:00 后不可约当日晚饭） */
+    private static final int DEFAULT_DINNER_CUTOFF_HOUR = 18;
 
-    /** 当前生效的截止小时，由 CutoffHourBinder 启动时注入 */
-    private static volatile int cutoffHour = DEFAULT_CUTOFF_HOUR;
+    private static volatile int lunchCutoffHour = DEFAULT_LUNCH_CUTOFF_HOUR;
+    private static volatile int dinnerCutoffHour = DEFAULT_DINNER_CUTOFF_HOUR;
 
     private WorkdayUtil() {
     }
@@ -44,11 +48,15 @@ public final class WorkdayUtil {
     }
 
     /**
-     * 当前时刻是否已过当日约定截止时间（不能约当天）。
+     * 当前时刻是否已过指定餐段的当日约定截止时间。
      * 非工作日恒为 true（本就不允许约，见错误码 1009）。
      */
-    public static boolean isTodayOrderClosed(LocalDateTime now) {
-        return isTodayOrderClosed(now, getCutoffHour());
+    public static boolean isTodayOrderClosed(LocalDateTime now, MealType mealType) {
+        return isTodayOrderClosed(now, cutoffHourFor(mealType));
+    }
+
+    private static int cutoffHourFor(MealType mealType) {
+        return mealType == MealType.DINNER ? dinnerCutoffHour : lunchCutoffHour;
     }
 
     /**
@@ -65,19 +73,18 @@ public final class WorkdayUtil {
         return now.getHour() >= cutoffHour;
     }
 
-    public static int getCutoffHour() {
-        return cutoffHour;
-    }
-
     /**
-     * 配置绑定：把 yml 中的 couple-meal.plan.order-cutoff-hour 注入静态字段。
+     * 配置绑定：把 yml 中的 couple-meal.plan.cutoff.lunch / .dinner 注入静态字段。
      * 独立组件，保证外层 WorkdayUtil 仍是纯静态工具类。
      */
     @Component
     static class CutoffHourBinder {
 
-        CutoffHourBinder(@Value("${couple-meal.plan.order-cutoff-hour:18}") int cutoffHour) {
-            WorkdayUtil.cutoffHour = cutoffHour;
+        CutoffHourBinder(
+                @Value("${couple-meal.plan.cutoff.lunch:11}") int lunchCutoffHour,
+                @Value("${couple-meal.plan.cutoff.dinner:18}") int dinnerCutoffHour) {
+            WorkdayUtil.lunchCutoffHour = lunchCutoffHour;
+            WorkdayUtil.dinnerCutoffHour = dinnerCutoffHour;
         }
     }
 }

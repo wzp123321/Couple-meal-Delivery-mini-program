@@ -130,6 +130,11 @@ function whoLine(p: PlanBrief): string {
   return `${partnerName.value} 想吃`
 }
 
+/** 餐段标签，与详情页文案一致（mealType 1=午饭 2=晚饭） */
+function mealLabel(p: PlanBrief): string {
+  return p.mealType === 1 ? '午饭' : '晚饭'
+}
+
 /** 一句话状态说明，替代冷冰冰的状态名（PRD §12.11 文案调性） */
 function hintLine(p: PlanBrief): string {
   const mine = p.role === 'orderer'
@@ -228,8 +233,11 @@ function goDetail(id: number): void {
       <view v-for="p in list" :key="p.id" class="card plan" @tap="goDetail(p.id)">
         <view class="plan-top">
           <view class="plan-who">{{ whoLine(p) }}</view>
-          <view class="tag" :class="statusMeta(p.status).cls">
-            {{ statusMeta(p.status).label }}
+          <view class="plan-tags">
+            <text class="meal-tag">{{ mealLabel(p) }}</text>
+            <view class="tag" :class="statusMeta(p.status).cls">
+              {{ statusMeta(p.status).label }}
+            </view>
           </view>
         </view>
         <view class="plan-dish">{{ (p.items || []).join(' · ') }}</view>
@@ -363,6 +371,20 @@ function goDetail(id: number): void {
   font-size: 28rpx;
   font-weight: 700;
   color: var(--ink);
+}
+.plan-tags {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  flex: none;
+}
+.meal-tag {
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  background: #fff0e2;
+  color: #ff9b6a;
 }
 .tag {
   font-size: 22rpx;

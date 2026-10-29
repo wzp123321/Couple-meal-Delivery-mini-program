@@ -22,7 +22,7 @@
 #       测试图片为仓库内固件 itest/fixtures/test.png，无需联网或本地生成。
 # =============================================================================
 set -u
-BASE="http://127.0.0.1:8080/api"
+BASE="${BASE:-http://127.0.0.1:8080/api}"
 SECRET="dev-only-change-me-in-prod-32bytes-min"
 MYSQL="mysql -h 127.0.0.1 -P 3306 -u root -p123456 couple_meal"
 
@@ -58,6 +58,8 @@ val() { echo "$2" | grep -o "\"$1\":[^,}]*" | head -1; }
 
 TA=$(genjwt 10001); TB=$(genjwt 10002); TC=$(genjwt 10003)
 TODAY=$(date +%Y-%m-%d)
+HOUR=$(date +%H)
+if [ "$HOUR" -ge 11 ]; then CREATE_DATE=$(date -d "+1 day" +%Y-%m-%d); else CREATE_DATE=$TODAY; fi
 FAR=$(date -d "+8 days" +%Y-%m-%d)     # 超 7 天上限
 # 取一个周六作为非工作日：从今天往后找第一个周六
 SAT=""; for i in $(seq 1 10); do d=$(date -d "+$i days" +%Y-%m-%d); dow=$(date -d "$d" +%u); if [ "$dow" = "6" ]; then SAT=$d; break; fi; done
@@ -93,7 +95,7 @@ echo "  B 视角 nicknameMine=$(val nicknameMine "$INFO2") anniversary=$(val ann
 check "C(无关系)查关系信息应 1002" 1002 "$(jcall GET /couple/info "$TC" "")"
 
 echo "===== 2. 点餐流 source=0 闭环 ====="
-CR=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"红烧肉\"}],\"remark\":\"少放糖\"}")
+CR=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"红烧肉\"}],\"remark\":\"少放糖\"}")
 check "A 发起点餐约定" 0 "$CR"
 PID1=$(echo "$CR" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 echo "  planId=$PID1 warnings=$(val warnings "$CR")"
@@ -117,7 +119,7 @@ echo "  B love: mine=$(val mine "$LOV") partner=$(val partner "$LOV") total=$(va
 check "C 越权访问约定应 1002" 1002 "$(jcall GET /plan/$PID1 "$TC" "")"
 
 echo "===== 3. 主动带流 source=1 闭环 ====="
-CR2=$(jcall POST /plan/create "$TB" "{\"source\":1,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"西红柿鸡蛋面\"}],\"remark\":\"\"}")
+CR2=$(jcall POST /plan/create "$TB" "{\"source\":1,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"西红柿鸡蛋面\"}],\"remark\":\"\"}")
 check "B 发起主动带" 0 "$CR2"
 PID2=$(echo "$CR2" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 D3=$(jcall GET /plan/$PID2 "$TA" "")
@@ -125,7 +127,7 @@ echo "  A 视角(待接收) actions=$(val actions "$D3")"
 RJ=$(jcall POST /plan/$PID2/reject "$TA" '{"reason":"今天太累"}')
 check "A 婉拒主动带→已取消" 0 "$RJ"
 D4=$(jcall GET /plan/$PID2 "$TA" ""); echo "  婉拒后 status=$(val status "$D4")"
-CR3=$(jcall POST /plan/create "$TB" "{\"source\":1,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"三明治\"}]}")
+CR3=$(jcall POST /plan/create "$TB" "{\"source\":1,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"三明治\"}]}")
 PID3=$(echo "$CR3" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 CF=$(jcall POST /plan/$PID3/confirm "$TA" '{}')
 check "A 确认主动带→备餐中" 0 "$CF"
@@ -137,13 +139,13 @@ LOV2=$(jcall GET /love/summary "$TB" "")
 echo "  二次完成后 B mine=$(val mine "$LOV2") total=$(val total "$LOV2")"
 
 echo "===== 4. 取消 / 撤回 / 改派 ====="
-CR4=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"寿司\"}]}")
+CR4=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"寿司\"}]}")
 PID4=$(echo "$CR4" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 jcall POST /plan/$PID4/claim "$TB" '{}' >/dev/null
 CN=$(jcall POST /plan/$PID4/cancel "$TA" '{"reason":"不吃了"}')
 check "认领后 A 取消(原因必填)" 0 "$CN"
 D5=$(jcall GET /plan/$PID4 "$TA" ""); echo "  取消后 status=$(val status "$D5")"
-CR5=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"饺子\"}]}")
+CR5=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"饺子\"}]}")
 PID5=$(echo "$CR5" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 jcall POST /plan/$PID5/claim "$TB" '{}' >/dev/null
 WD=$(jcall POST /plan/$PID5/withdraw "$TB" '{}')
@@ -155,7 +157,7 @@ check "B 改派(空 carrier)→待认领" 0 "$RS"
 D7=$(jcall GET /plan/$PID5 "$TA" ""); echo "  改派后 status=$(val status "$D7")"
 
 echo "===== 5. 并发领取(乐观锁) ====="
-CR6=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"沙拉\"}]}")
+CR6=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"沙拉\"}]}")
 PID6=$(echo "$CR6" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 jcall POST /plan/$PID6/claim "$TB" '{}' >"$WORK/c1.txt" &
 jcall POST /plan/$PID6/claim "$TB" '{}' >"$WORK/c2.txt" &
@@ -168,9 +170,9 @@ echo "===== 6. 发起校验(非工作日/超期/菜品数/备注) ====="
 check "非工作日(周六 $SAT)发起应 1009" 1009 "$(jcall POST /plan/create "$TA" "{\"source\":0,\"planDate\":\"$SAT\",\"items\":[{\"name\":\"x\"}]}")"
 check "超 7 天发起应 1011" 1011 "$(jcall POST /plan/create "$TA" "{\"source\":0,\"planDate\":\"$FAR\",\"items\":[{\"name\":\"x\"}]}")"
 ITEMS=""; for i in $(seq 1 11); do ITEMS="$ITEMS{\"name\":\"菜$i\"},"; done; ITEMS="[${ITEMS%,}]"
-check "11 道菜应 2003" 2003 "$(jcall POST /plan/create "$TA" "{\"source\":0,\"planDate\":\"$TODAY\",\"items\":$ITEMS}")"
+check "11 道菜应 2003" 2003 "$(jcall POST /plan/create "$TA" "{\"source\":0,\"planDate\":\"$CREATE_DATE\",\"items\":$ITEMS}")"
 LONGREMARK=$(printf '备%s注' "$(printf '注%.0s' $(seq 1 100))")
-check "备注101字应 2005" 2005 "$(jcall POST /plan/create "$TA" "{\"source\":0,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"x\"}],\"remark\":\"$LONGREMARK\"}")"
+check "备注101字应 2005" 2005 "$(jcall POST /plan/create "$TA" "{\"source\":0,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"x\"}],\"remark\":\"$LONGREMARK\"}")"
 
 echo "===== 7. 菜单 CRUD / 忌口 / 重名 / 画像 / 推荐 ====="
 M1=$(jcall POST /menu "$TA" '{"name":"番茄炒蛋","category":2,"isFavorite":true,"avoidLevel":0,"note":"下饭"}')
@@ -208,6 +210,8 @@ UP=$(curl -s -m15 -H "Authorization: Bearer $TA" -F "file=@$TEST_PNG;type=image/
 check "A 上传打卡图" 0 "$UP"
 UPURL=$(echo "$UP" | grep -o '"url":"[^"]*"' | head -1 | sed 's/"url":"//;s/"//')
 echo "  upload url=$UPURL"
+HOUR_NOW=$(date +%H)
+if [ "$HOUR_NOW" -ge 10 ] || [ "$HOUR_NOW" -lt 2 ]; then
 SUB=$(jcall POST /checkin/submit "$TA" "{\"planId\":$PID1,\"images\":[\"$UPURL\"],\"rating\":3,\"content\":\"今天超香\"}")
 check "A(接收方)提交打卡" 0 "$SUB"
 CID=$(echo "$SUB" | grep -o '"data":[0-9]*' | grep -o '[0-9]*')
@@ -224,6 +228,7 @@ RPL=$(jcall POST /checkin/reply "$TB" "{\"checkinId\":$CID,\"reply\":\"宝贝辛
 check "B(带饭方)回应" 0 "$RPL"
 GALA2=$(jcall GET /checkin/gallery "$TA" "?size=10")
 echo "  A gallery 含回应: [$(echo "$GALA2" | grep -o '宝贝辛苦啦' | head -1)]"
+else echo "  SKIP: 打卡交互段需在窗口(10:00~次日02:00)内运行，跳过提交/修改/回应"; fi
 # 可见性: 插一条已过审的对方打卡, 验证 B 相册能看到
 CIDX=$((CID+100000)); CIDX_IMG=$((CIDX+1))
 CID_PAIR=$($MYSQL -N -e "SELECT id FROM couple WHERE user_a=10001 LIMIT 1" 2>/dev/null | tail -1)
@@ -243,7 +248,7 @@ RP=$(jcall GET /report "$TA" "?scope=month&anchor=2026-10")
 check "A 月度报告" 0 "$RP"; echo "  month report keys: $(echo "$RP" | grep -o '\"[a-zA-Z]*\":' | tr -d ':\"' | tr '\n' ' ')"
 RY=$(jcall GET /report "$TA" "?scope=year&anchor=2026")
 check "A 年度报告" 0 "$RY"
-CRSH=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$TODAY\",\"items\":[{\"name\":\"火锅食材\"}]}")
+CRSH=$(jcall POST /plan/create "$TA" "{\"source\":0,\"mealType\":1,\"planDate\":\"$CREATE_DATE\",\"items\":[{\"name\":\"火锅食材\"}]}")
 PIDSH=$(echo "$CRSH" | grep -o '"planId":[0-9]*' | grep -o '[0-9]*')
 jcall POST /plan/$PIDSH/claim "$TB" '{}' >/dev/null
 jcall POST /plan/$PIDSH/deliver "$TB" '{"deliverLocation":"门口"}' >/dev/null

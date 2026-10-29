@@ -627,3 +627,57 @@ export interface ReportResp {
   /** 最长连续带饭天数，仅年报返回（相邻两日只跳过周末仍算连续） */
   longestStreak?: number
 }
+
+/* ============================================================
+ * 12. rps —— 石头剪刀布协商（phase-2，见 openspec/changes/phase-2/specs/rps-negotiation）
+ * ========================================================== */
+
+/** 出拳：1 石头 / 2 剪刀 / 3 布 */
+export type RpsChoice = 1 | 2 | 3
+
+/** 对局状态：0 进行中（待出拳）/ 1 已完成 */
+export type RpsGameStatus = 0 | 1
+
+/** 石头剪刀布对局视图（对齐后端 RpsService.RpsGameVO 字段） */
+export interface RpsGameVO {
+  gameId: number
+  coupleId: number
+  /** 约定日期 yyyy-MM-dd（仅工作日） */
+  planDate: string
+  mealType: MealType
+  initiatorId: number
+  status: RpsGameStatus
+  /** 胜方 user_id，未完成时为 null */
+  winnerId: number | null
+  /** 采纳后生成的约定 id，未采纳为 null */
+  planId: number | null
+  /** 当前回合号（平局重出自增） */
+  currentRound: number
+  /** 当前回合「我」的出拳（未出为 null） */
+  myChoice: RpsChoice | null
+  /** 当前回合对方是否已出拳 */
+  opponentThrown: boolean
+}
+
+/** POST /api/rps/create 入参 */
+export interface RpsCreateReq {
+  mealType: MealType
+  /** yyyy-MM-dd */
+  planDate: string
+}
+
+/** POST /api/rps/{gameId}/throw 入参 */
+export interface RpsThrowReq {
+  choice: RpsChoice
+}
+
+/** POST /api/rps/{gameId}/adopt 入参（菜品留空则由后端给默认占位名） */
+export interface RpsAdoptReq {
+  items?: { name: string }[]
+  remark?: string
+}
+
+/** POST /api/rps/{gameId}/adopt 出参 */
+export interface RpsAdoptResp {
+  planId: number
+}

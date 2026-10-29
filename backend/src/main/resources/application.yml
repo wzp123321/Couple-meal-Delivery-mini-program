@@ -55,7 +55,6 @@ couple-meal:
     avatar-edge: 256
     avatar-max-size: 102400
   plan:
-    order-cutoff-hour: 18
     max-items: 10
     max-date-ahead-days: 7
   schedule:

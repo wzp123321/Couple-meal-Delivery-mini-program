@@ -54,7 +54,7 @@ curl -s -o /dev/null -w "%{http_code}\n" \
 - 数据源：`jdbc:mysql://127.0.0.1:3306/couple_meal`
 - `couple-meal.jwt.secret`：鉴权密钥，**dev 默认值为占位密钥**；`itest.sh` 用同一默认值离线签测试 JWT。若改了密钥，需同步改 `itest.sh` 顶部 `SECRET` 变量。
 - `couple-meal.upload.base-dir`：图片落盘目录（默认 `/data/upload`），需真实存在且可被 Nginx 静态映射（生产）。
-- `couple-meal.plan.order-cutoff-hour`：当日约定发起截止小时（默认 `18`）。
+- `couple-meal.plan.cutoff.lunch` / `couple-meal.plan.cutoff.dinner`：午饭/晚饭当日约定发起截止小时（默认 `11` / `18`）。超过对应餐段截止小时的工作日不可再发起当日该餐段约定（失败码 `1010`）。
 
 ## 4. 集成自测 `itest`
 

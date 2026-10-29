@@ -1,0 +1,7 @@
+schema: spec-driven
+created: 2026-10-29
+goal: 二期需求（晚市 / 石头剪刀布协商 / 订阅消息）
+affected_areas:
+  - meal-plan
+  - notifications
+  - backend

@@ -103,6 +103,34 @@ public class WxConfig {
     }
 
     /**
+     * 发送订阅消息（模板消息）。失败抛 WX_API_FAILED；调用方通常就地吞掉，
+     * 不阻断主流程（订阅消息只是系统内通知的增量通道，见 subscribe-message spec）。
+     *
+     * @param openid     接收者 openid（来自 user.openid）
+     * @param templateId 模板 ID（来自配置；空串由调用方前置判断，这里仍会打到微信）
+     * @param data       模板字段，结构为 {fieldName: {value: "..."}}，字段名需与 MP 后台注册模板一致
+     */
+    public void sendSubscribeMessage(String openid, String templateId, Map<String, Object> data) {
+        String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + getAccessToken();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, Object> body = new HashMap<>();
+        body.put("touser", openid);
+        body.put("template_id", templateId);
+        body.put("data", data);
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
+        try {
+            ResponseEntity<WxBaseResp> resp = wxRestTemplate().postForEntity(url, request, WxBaseResp.class);
+            WxBaseResp r = resp.getBody();
+            if (r == null || (r.getErrcode() != null && r.getErrcode() != 0)) {
+                throw new BizException(ErrorCode.WX_API_FAILED);
+            }
+        } catch (RestClientException e) {
+            throw new BizException(ErrorCode.WX_API_FAILED);
+        }
+    }
+
+    /**
      * 图片同步审核（小图接口）。返回 true=通过，false=内容违规（87014）。
      * 其它异常抛 WX_API_FAILED。
      */

@@ -16,7 +16,8 @@ public enum NotifyType {
     DELIVERED(3, "已送达"),
     COMPLETED(4, "已完成"),
     DAILY_REMIND(5, "每日提醒"),
-    CHECKED_IN(6, "已打卡");
+    CHECKED_IN(6, "已打卡"),
+    CHECKIN_REMIND(7, "待打卡提醒");
 
     private final int code;
     private final String desc;

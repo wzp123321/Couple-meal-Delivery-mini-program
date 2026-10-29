@@ -26,6 +26,7 @@ import com.couplemeal.service.MenuService;
 import com.couplemeal.service.NotifyService;
 import com.couplemeal.service.PlanService;
 import com.couplemeal.service.PlanStateMachine;
+import com.couplemeal.service.SubscribeMessageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -75,6 +76,7 @@ public class PlanServiceImpl implements PlanService {
     private final NotifyService notifyService;
     private final LoveValueService loveValueService;
     private final MenuService menuService;
+    private final SubscribeMessageService subscribeMessageService;
 
     @Value("${couple-meal.plan.max-items:10}")
     private int maxItems;
@@ -89,7 +91,7 @@ public class PlanServiceImpl implements PlanService {
     public CreateResult create(int mealType, int source, LocalDate planDate, List<ItemInput> items, String remark) {
         Long coupleId = UserContext.requireCoupleId();
         Long me = UserContext.getUserId();
-        MealType.of(mealType);                    // 餐次非法 -> PARAM_INVALID
+        MealType mt = MealType.of(mealType);      // 餐次非法 -> PARAM_INVALID
         PlanSource planSource = PlanSource.of(source);
 
         // 校验顺序按「先便宜后贵」：日期 -> 菜品 -> 备注
@@ -103,7 +105,7 @@ public class PlanServiceImpl implements PlanService {
         if (planDate.isBefore(today) || planDate.isAfter(today.plusDays(maxDateAheadDays))) {
             throw new BizException(ErrorCode.DATE_OUT_OF_RANGE);
         }
-        if (planDate.equals(today) && WorkdayUtil.isTodayOrderClosed(LocalDateTime.now())) {
+        if (planDate.equals(today) && WorkdayUtil.isTodayOrderClosed(LocalDateTime.now(), mt)) {
             throw new BizException(ErrorCode.TOO_LATE_TODAY);
         }
         if (items == null || items.size() < MIN_ITEMS || items.size() > maxItems) {
@@ -129,7 +131,7 @@ public class PlanServiceImpl implements PlanService {
         MealPlan plan = new MealPlan();
         plan.setId(IdUtil.nextId());
         plan.setCoupleId(coupleId);
-        plan.setMealType(mealType);
+        plan.setMealType(mt.getCode());
         plan.setSource(planSource.getCode());
         plan.setPlanDate(planDate);
         plan.setRemark(finalRemark);
@@ -319,6 +321,9 @@ public class PlanServiceImpl implements PlanService {
                 .set(MealPlan::getDeliverNote, note));
         notifyService.push(plan.getCoupleId(), plan.getOrdererId(), planId, NotifyType.DELIVERED,
                 "饭送到啦～", location == null ? "快来取饭吧" : "放在" + location + "，快来取吧");
+        // 订阅消息增量：提醒接收方拍照打卡（仅微信下发，不新增站内行）
+        subscribeMessageService.send(plan.getOrdererId(), NotifyType.CHECKIN_REMIND,
+                "记得拍照打卡哦", "饭到啦，拍张照留个纪念吧");
     }
 
     // ===================== 完成（发爱心值） =====================
