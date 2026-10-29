@@ -9,9 +9,9 @@
 - 货币：纯虚拟记账（轻量爱心值，正向激励，不碰真实钱，不做欠债）
 - 后端：自建 Spring Boot 3.4 + MyBatis-Plus + MySQL 8（沿用备课系统栈）
 - 前端：微信小程序原生 / uni-app
-- MVP 推送：先用系统内红点/角标，微信订阅消息放二期
+- 推送：系统内红点/角标（MVP） + **微信订阅消息（phase-2 已实现，模板未配置时优雅跳过）**
 - 菜品图片：菜单库仍纯文字起步；**打卡照片是 MVP 功能**（两件事分开，2026-10-27）
-- 时段：MVP 仅午饭（午+晚二期）
+- 时段：**午饭 + 晚饭**（phase-2 已支持；发起截止 午饭 11:00 / 晚饭 18:00，按餐段取配置）
 - 场景：仅工作日（周一~周五）带午饭；周末不自动排班，需要可手动发起
 
 ## 核心突出点（差异化卖点）
@@ -37,7 +37,7 @@ F. 看得见的日常（饭桌相册）：吃饭时拍照打卡+三档点评，�
 主动带回退等于 cancel。任意非终态可取消（记 cancel_log，不发爱心值）。爱心值按 plan_id 幂等+1。
 status 枚举 0待认领 1待接收 2备餐中 3已交付 4已完成 5已取消 **6已过期**。
 超时自动流转：次日 02:30 仍未交付→已过期归档（已交付不参与）；已交付超 24h 未领取→自动完成并照发爱心值（PRD §12.6）。
-**改期、协商谁带（石头剪刀布）均为二期**，MVP 不实现。
+**石头剪刀布协商（谁带饭）已在 phase-2 实现**（输家带饭，采纳生成 source=1 约定，`rps_game`/`rps_round` 表）；**改期仍为二期**，尚未实现。
 
 ## 已确认规则（Q1-Q5，2026-10-26~27 拍板，详见 PRD §9）
 - 解绑：逻辑删除 couple，记录保留（双方本地历史仍可看）
@@ -70,10 +70,17 @@ status 枚举 0待认领 1待接收 2备餐中 3已交付 4已完成 5已取消 
 ## 开发流程（2026-10-27 确立）
 - **OpenSpec `spec-driven` 为主线**：proposal → specs → design → tasks → apply → archive（= 设计→开发→验收）
 - CLI 1.14.1 已装；项目已 `openspec init`（`openspec/config.yaml`，schema spec-driven，语言 zh-CN）
-- 当前变更 **`bootstrap-mvp`**：proposal + 9 个 capability spec + design + tasks，**4/4 完成**，`validate --strict` 通过
-- 9 个 capability：couple-binding / meal-plan / menu-prefs / love-value / notifications / meal-checkin / plan-history / shopping-list / weekly-schedule
+- **已归档两个变更**：`bootstrap-mvp`（MVP 9 能力）与 `2026-10-29-phase-2`（晚市/石头剪刀布/订阅消息），均已 archive 提升为 specs 基线
+- **`openspec/specs/` 现有 12 个能力**：couple-binding / meal-plan / menu-prefs / love-value / notifications / meal-checkin / plan-history / shopping-list / weekly-schedule（MVP）+ meal-type-evening / rps-negotiation / subscribe-message（phase-2）
+- 验收全部通过：MVP 主 itest 50/0、晚市 6/6、石头剪刀布 25/0、订阅消息 4/0；前端 type-check 除 `privacy.ts` 预置 `wx` 错误外干净
 - **两层分工**：OpenSpec 管规格与验收（`openspec/`）、duoagent 管多 Agent 分工与门控（`.workbuddy/runs/`）；**S 档只走 OpenSpec，M/L 档才拉 8 角色**，但产物必须收敛回 OpenSpec 四件套
 - 硬规则：没 spec 不写代码 / 只做 tasks 内的事 / 不许 `--no-validate` 与 `--skip-specs` / 不提前 archive / 冲突以 specs 为准
+
+### 本地跑 itest 的环境要点（2026-10-29 实测）
+- **后端后台进程跨 Bash 调用会被沙箱回收**：`nohup java -jar &` 启动的进程在 Bash 调用结束即消失。跑 itest 必须**在同一个 Bash 调用内**完成「启动后端 → 等 `curl 8080/api/health`=200 → 跑 itest」。
+- 长命令前台会被 SIGTERM 截断（主 itest、`openspec archive` 均遇到）：改用 Bash 工具 `run_in_background: true` 执行、输出写 `/tmp/*.log` 再读。
+- **端口**：jar 默认被注入绑 57230（被占用则启动失败），必须 `java -jar ... --server.port=8080` 覆盖；**8080 是代理入口**，`curl 127.0.0.1:8080` 走 `http_proxy`（端口每次会变）能达后端，直连其他端口（如 8091）反而 502。
+- `openspec archive <change> --yes` 用后台任务执行。
 
 ## 文档写作规范（2026-10-27 用户要求，已写入 AGENT.md §3）
 - **只写最新结论**，不留版本变更史 / 修订记录；旧结论直接删

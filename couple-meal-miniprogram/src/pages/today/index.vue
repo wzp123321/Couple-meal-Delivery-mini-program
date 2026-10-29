@@ -171,9 +171,14 @@ function goCreate(source: 0 | 1): void {
   uni.navigateTo({ url: `/pages/plan/create?source=${source}` })
 }
 
-function goDetail(id: number): void {
+    function goDetail(id: number): void {
   uni.navigateTo({ url: `/pages/plan/detail?id=${id}` })
 }
+
+    /** 跳转到石头剪刀布协商页（phase-2），默认午饭，日期由对局页按工作日兜底 */
+    function goRps(): void {
+      uni.navigateTo({ url: '/pages/rps/index?mealType=1' })
+    }
 </script>
 
 <template>
@@ -198,6 +203,16 @@ function goDetail(id: number): void {
     <view class="sec-head">
       <text class="sec-title">今天</text>
       <text class="sec-sub">{{ dateLine }}</text>
+    </view>
+
+    <!-- 石头剪刀布入口：懒得商量谁带，就猜拳定胜负（phase-2） -->
+    <view class="card rps-entry" @tap="goRps">
+      <view class="rps-ico">🎮</view>
+      <view class="rps-txt">
+        <view class="rps-t">不想商量谁带？猜拳定胜负</view>
+        <view class="rps-d">输家带饭，愿赌服输～</view>
+      </view>
+      <view class="rps-go">去玩 ›</view>
     </view>
 
     <!-- 三级错误态（PRD §12.2） -->
@@ -331,6 +346,37 @@ function goDetail(id: number): void {
 .sec-sub {
   font-size: 24rpx;
   color: var(--ink-2);
+}
+
+/* —— 石头剪刀布入口（phase-2） —— */
+.rps-entry {
+  margin: 8rpx 32rpx 0;
+  padding: 24rpx 28rpx;
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  background: linear-gradient(135deg, #fff, #fff1e8);
+}
+.rps-ico {
+  font-size: 52rpx;
+}
+.rps-txt {
+  flex: 1;
+}
+.rps-t {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink);
+}
+.rps-d {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-2);
+}
+.rps-go {
+  font-size: 26rpx;
+  font-weight: 700;
+  color: var(--orange);
 }
 
 /* —— 周末提示 —— */

@@ -6,6 +6,14 @@
 import { request } from './request'
 import { getToken } from './auth'
 import { toast } from './toast'
+import type {
+  MealType,
+  RpsAdoptReq,
+  RpsAdoptResp,
+  RpsCreateReq,
+  RpsGameVO,
+  RpsThrowReq,
+} from '@/types/api'
 
 /** 额外选项，与 request.ts 的同名参数一一对应 */
 export interface ApiOptions {

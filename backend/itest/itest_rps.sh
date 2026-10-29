@@ -47,16 +47,16 @@ cleanup() {
   $MYSQL -e "SET FOREIGN_KEY_CHECKS=0;
 DELETE FROM meal_plan_item WHERE plan_id IN (SELECT id FROM meal_plan WHERE couple_id=20021);
 DELETE FROM meal_plan WHERE couple_id=20021;
-DELETE FROM rps_round WHERE game_id IN (SELECT id FROM rps_game WHERE couple_id=20001);
+DELETE FROM rps_round WHERE game_id IN (SELECT id FROM rps_game WHERE couple_id=20021);
 DELETE FROM rps_game WHERE couple_id=20021;
 DELETE FROM couple WHERE id=20021;
-DELETE FROM user WHERE id IN (10021,10022);
+DELETE FROM user WHERE id IN (10021,10022,10003);
 SET FOREIGN_KEY_CHECKS=1;" 2>&1 | grep -v Warning
 }
 
 echo "===== 0. 准备测试用户与关系 ====="
 cleanup
-$MYSQL -e "INSERT INTO user (id,openid,nickname,create_time,update_time) VALUES (10021,'rps_a','小A',NOW(),NOW()),(10022,'rps_b','小B',NOW(),NOW());
+$MYSQL -e "INSERT INTO user (id,openid,nickname,create_time,update_time) VALUES (10021,'rps_a','小A',NOW(),NOW()),(10022,'rps_b','小B',NOW(),NOW()),(10003,'rps_c','小C',NOW(),NOW());
 INSERT INTO couple (id,user_a,user_b,status,create_time,update_time) VALUES (20021,10021,10022,1,NOW(),NOW());" 2>&1 | grep -v Warning
 echo "  用户/关系就绪 A=10021(user_a) B=10022(user_b) NW=$NW"
 

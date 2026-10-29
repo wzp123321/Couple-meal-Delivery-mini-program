@@ -110,6 +110,13 @@
         "navigationBarTitleText": "采购清单",
         "navigationBarBackgroundColor": "#FFF9F2"
       }
+    },
+    {
+      "path": "pages/rps/index",
+      "style": {
+        "navigationBarTitleText": "猜拳决定谁带",
+        "navigationBarBackgroundColor": "#FFF9F2"
+      }
     }
   ],
   "tabBar": {

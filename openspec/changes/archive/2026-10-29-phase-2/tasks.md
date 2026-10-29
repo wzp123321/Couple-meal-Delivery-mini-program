@@ -14,7 +14,7 @@
 - [x] 2.3 胜负判定（平局重出）、输家带饭、采纳生成 `source=1` 约定
 - [x] 2.4 数据隔离 + 进行中对局幂等复用
 - [x] 2.5 itest：发起 / 出拳 / 平局 / 胜负 / 采纳用例（25/0 通过）
-- [ ] 2.6 前端 `pages/rps/index.vue`：协商页（发起 / 出拳 / 平局重出 / 胜负 / 采纳）+ `pages.json` 注册 + `api.ts` 封装；入口挂在今日页（待真机端落地）
+- [x] 2.6 前端 `pages/rps/index.vue`：协商页（发起 / 出拳 / 平局重出 / 胜负 / 采纳）+ `pages.json` 注册 + `api.ts` 封装；入口挂在今日页（今日页新增「🎮 猜拳决定谁带」入口）
 
 ## 3. subscribe-message（订阅消息）
 - [x] 3.1 `WxConfig`/TokenCache：`access_token` 缓存与刷新
