@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.couplemeal.common.util.IdUtil;
+import com.couplemeal.domain.enums.MealType;
 import com.couplemeal.domain.enums.NotifyType;
 import com.couplemeal.entity.Notification;
 import com.couplemeal.mapper.NotificationMapper;
@@ -27,8 +28,8 @@ import java.time.LocalDateTime;
  *  1. {@code push} 是唯一写入入口，**不先查再插** —— 并发下必漏判，交给
  *     {@code uk_notification_plan_type_receiver} 拒绝（见 01-通用机制.md §2 原则 1）。
  *  2. 只 catch {@link DuplicateKeyException} → 重复推送静默忽略。
- *  3. {@code planId} 为 null 的每日提醒不参与该唯一约束（MySQL 唯一索引对 NULL 不去重），
- *     它的"当天只发一次"由 {@link com.couplemeal.job.DailyRemindJob} 自己判重。
+ *  3. 每日提醒同样携带 {@code planId}，由唯一索引保证「同一约定 + 同一人 + type=5」只留一条；
+ *     午饭 / 晚饭是不同约定，互不抑制。
  *
  * <p>文案基调见 PRD §12.11：情感化，不用「订单 / 配送 / 下单」等交易词。
  */
@@ -41,9 +42,25 @@ public class NotifyServiceImpl implements NotifyService {
     private static final int UNREAD = 0;
     private static final int READ = 1;
 
-    /** 每日提醒文案（type=5，见 50-通知/后端.md §3.2） */
-    public static final String DAILY_REMIND_TITLE = "今天的饭还没人认领";
-    public static final String DAILY_REMIND_CONTENT = "TA 还等着呢，有空的话就带一份吧";
+    /** 每日提醒文案前缀（type=5，按餐段区分，见 50-通知/后端.md §3.2） */
+    private static final String DAILY_REMIND_TITLE_LUNCH = "今天午饭谁带呀";
+    private static final String DAILY_REMIND_TITLE_DINNER = "今天晚饭谁带呀";
+    private static final String DAILY_REMIND_CONTENT_LUNCH = "TA 还等着呢，中午有空的话就带一份吧";
+    private static final String DAILY_REMIND_CONTENT_DINNER = "TA 还等着呢，晚上有空的话就带一份吧";
+
+    /**
+     * 每日提醒标题：午饭 / 晚饭分开措辞，未知餐段回落午饭文案。
+     */
+    public static String dailyRemindTitle(MealType mealType) {
+        return mealType == MealType.DINNER ? DAILY_REMIND_TITLE_DINNER : DAILY_REMIND_TITLE_LUNCH;
+    }
+
+    /**
+     * 每日提醒正文：午饭 / 晚饭分开措辞，未知餐段回落午饭文案。
+     */
+    public static String dailyRemindContent(MealType mealType) {
+        return mealType == MealType.DINNER ? DAILY_REMIND_CONTENT_DINNER : DAILY_REMIND_CONTENT_LUNCH;
+    }
 
     private final NotificationMapper notificationMapper;
     private final SubscribeMessageService subscribeMessageService;

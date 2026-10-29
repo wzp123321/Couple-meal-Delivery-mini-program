@@ -57,8 +57,14 @@ couple-meal:
   plan:
     max-items: 10
     max-date-ahead-days: 7
+  audit:
+    # 图片审核兜底：审核中超过该分钟数仍未收到微信回调，直接置为屏蔽（防回调丢失导致图永久不可见）
+    pending-timeout-minutes: 120
   schedule:
     expire-cron: "0 30 2 * * *"
     auto-complete-cron: "0 0 * * * *"
     invite-expire-cron: "0 0 * * * *"
     daily-remind-cron: "0 0 11 * * MON-FRI"
+    daily-remind-dinner-cron: "0 0 17 * * MON-FRI"
+    audit-pending-expire-cron: "0 50 3 * * *"
+    upload-cleanup-cron: "0 40 3 * * *"

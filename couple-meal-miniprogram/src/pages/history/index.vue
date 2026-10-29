@@ -13,6 +13,7 @@ import type {
   PlanRole,
   PlanStatus,
   ReportResp,
+  ReportScope,
 } from '@/types/api'
 import BottomSheet from '@/components/bottom-sheet.vue'
 
@@ -57,7 +58,26 @@ const loading = ref(false)
 const loaded = ref(false)
 
 const report = ref<ReportResp | null>(null)
+/** 报告范围：月 / 年（fix-phase2-gaps 8.1），默认月度与既有行为一致 */
+const reportScope = ref<ReportScope>('month')
 const reportVisible = ref(false)
+
+/** 只认最后一次切换的结果：快速来回点「月 / 年」时旧响应不覆盖新数据 */
+let reportSeq = 0
+
+/** 报告期文案全部从返回体的 scope/anchor 推导，切范围失败留着旧卡片时也不会张冠李戴 */
+const reportLabel = computed(() => {
+  const r = report.value
+  if (!r) return ''
+  if (r.scope === 'year') return `${r.anchor} 年度`
+  const m = /^(\d{4})-(\d{2})$/.exec(r.anchor)
+  return m ? `${Number(m[1])} 年 ${Number(m[2])} 月` : '月度'
+})
+
+const reportTitle = computed(() => (report.value ? `💞 ${reportLabel.value}小结` : '💞 小结'))
+
+/** 年报才有最长连续带饭天数，月报恒为 0（后端仅年报返回该字段） */
+const reportStreak = computed(() => (report.value?.scope === 'year' ? report.value.longestStreak ?? 0 : 0))
 
 /** 按月分组；列表本身按 plan_date 倒序，分组只做切片不改顺序 */
 const months = computed(() => {
@@ -135,14 +155,36 @@ async function loadPage(): Promise<void> {
   }
 }
 
+/**
+ * anchor 口径（70-历史/后端.md §3.4）：年报传 'yyyy'（当年）；月报不传 anchor，
+ * 交给后端默认的「上一自然月」，与改动前「上月小结」的口径完全一致。
+ */
+function anchorOf(scope: ReportScope): string | undefined {
+  return scope === 'year' ? formatDate(new Date(), 'yyyy') : undefined
+}
+
 async function loadReport(): Promise<void> {
+  const seq = ++reportSeq
+  const scope = reportScope.value
   try {
-    const resp = await get<ReportResp>('/api/report', { scope: 'month' }, { silent: true })
+    const resp = await get<ReportResp>(
+      '/api/report',
+      { scope, anchor: anchorOf(scope) },
+      // 静默：报告失败不弹 toast 打断浏览
+      { silent: true },
+    )
+    if (seq !== reportSeq) return
     // planCount=0 时整卡不渲染，不留空壳
     report.value = resp.planCount > 0 ? resp : null
   } catch {
-    report.value = null
+    // 失败保留上一次成功的报告，不清空页面（spec 8.2）
   }
+}
+
+function setReportScope(scope: ReportScope): void {
+  if (reportScope.value === scope) return
+  reportScope.value = scope
+  void loadReport()
 }
 
 function openReport(): void {
@@ -173,17 +215,25 @@ onPullDownRefresh(() => {
 
 <template>
   <view class="history">
-    <!-- 月度轻报告：planCount=0 时整卡不渲染 -->
+    <!-- 报告范围切换：月度 / 年度（年度走 scope=year&anchor=YYYY） -->
+    <view class="seg">
+      <view class="seg-item" :class="{ on: reportScope === 'month' }" @tap="setReportScope('month')">月</view>
+      <view class="seg-item" :class="{ on: reportScope === 'year' }" @tap="setReportScope('year')">年</view>
+    </view>
+
+    <!-- 轻报告：planCount=0 时整卡不渲染 -->
     <view v-if="report" class="rcard" @tap="openReport">
-      <view class="rtitle">💞 上月小结</view>
+      <view class="rtitle">{{ reportTitle }}</view>
       <view class="rline">
         你带了 {{ report.carrierCount.me }} 次，TA 带了 {{ report.carrierCount.partner }} 次
       </view>
       <view class="rmeta">
-        打卡 {{ report.checkinDays }} 天 · 爱心值 +{{ report.loveValueDelta }}
+        {{ reportLabel }} · 打卡 {{ report.checkinDays }} 天 · 爱心值 +{{ report.loveValueDelta }}
       </view>
       <view class="rmore">点开看看 ›</view>
     </view>
+    <!-- 切到年度但这年还没攒下记录：给一句回话，别让切换像没反应 -->
+    <view v-else-if="reportScope === 'year'" class="rvoid">今年还没攒够故事，等你们一起多吃几顿 🍚</view>
 
     <view class="filters">
       <view class="frow">
@@ -254,7 +304,7 @@ onPullDownRefresh(() => {
     </view>
   </view>
 
-  <bottom-sheet :visible="reportVisible" title="上月小结" @close="reportVisible = false">
+  <bottom-sheet :visible="reportVisible" :title="reportTitle" @close="reportVisible = false">
     <view v-if="report" class="rpanel">
       <view class="rline">
         你带了 {{ report.carrierCount.me }} 次，TA 带了 {{ report.carrierCount.partner }} 次
@@ -267,7 +317,8 @@ onPullDownRefresh(() => {
           </text>
         </view>
       </view>
-      <view class="rmeta">打卡 {{ report.checkinDays }} 天 · 爱心值 +{{ report.loveValueDelta }}</view>
+      <view class="rmeta">{{ reportLabel }} · 打卡 {{ report.checkinDays }} 天 · 爱心值 +{{ report.loveValueDelta }}</view>
+      <view v-if="reportStreak > 0" class="rmeta">最长连着带了 {{ reportStreak }} 天</view>
       <view class="rtip">这些数字背后，是一次次「我带给你」。</view>
     </view>
   </bottom-sheet>
@@ -279,6 +330,26 @@ onPullDownRefresh(() => {
   padding: 24rpx 0 60rpx;
   box-sizing: border-box;
   background: var(--cream-bg);
+}
+.seg {
+  margin: 0 32rpx 20rpx;
+  display: flex;
+  gap: 16rpx;
+}
+.seg-item {
+  flex: 1;
+  height: 72rpx;
+  line-height: 72rpx;
+  text-align: center;
+  border-radius: $radius-sm;
+  background: #fff;
+  font-size: 26rpx;
+  color: var(--ink-2);
+}
+.seg-item.on {
+  background: var(--peach);
+  color: var(--ink);
+  font-weight: 700;
 }
 .rcard {
   margin: 0 32rpx 8rpx;
@@ -307,6 +378,16 @@ onPullDownRefresh(() => {
   margin-top: 12rpx;
   font-size: 22rpx;
   color: var(--orange);
+}
+.rvoid {
+  margin: 0 32rpx 8rpx;
+  padding: 28rpx 32rpx;
+  border-radius: $radius-sm;
+  background: #fff;
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  font-size: 24rpx;
+  color: var(--ink-2);
 }
 .filters {
   padding: 12rpx 32rpx 4rpx;

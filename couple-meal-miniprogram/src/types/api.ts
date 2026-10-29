@@ -523,23 +523,25 @@ export interface CheckinImage {
   thumbUrl: string
 }
 
-/** 相册里的一条打卡（只含已过审图片；全部被屏蔽时 images 为空，卡片只显示文字） */
+/** 相册里的一条打卡（images 只含已过审图片；全部未过审时为空，卡片只显示文字） */
 export interface GalleryItem {
   checkinId: number
   planId: number
-  planDate: string
+  /** 是否本人打卡：对方的打卡只有全部过审才可见 */
+  mine: boolean
   rating: CheckinRating | null
   content: string | null
   reply: string | null
+  /** 汇总审核态：0 审核中 / 1 全部通过 / 2 含屏蔽图 */
+  auditStatus: number
+  createTime: string // 'yyyy-MM-ddTHH:mm:ss'
   images: CheckinImage[]
-  authorNickname: string
-  createTime: string
 }
 
 /** 相册按月分组 */
 export interface GalleryGroup {
   month: string // 'yyyy-MM'，标题渲染成「2026 年 10 月」
-  list: GalleryItem[]
+  cards: GalleryItem[]
 }
 
 /** GET /api/checkin/gallery 入参 */
@@ -550,8 +552,8 @@ export interface GalleryReq {
 
 /** GET /api/checkin/gallery 出参 */
 export interface GalleryResp {
-  list: GalleryGroup[]
-  cursor: string | null // 为 null 表示没有下一页
+  months: GalleryGroup[] // 月份倒序
+  nextCursor: string | null // 为 null 表示没有下一页
   hasMore: boolean
 }
 
@@ -680,4 +682,21 @@ export interface RpsAdoptReq {
 /** POST /api/rps/{gameId}/adopt 出参 */
 export interface RpsAdoptResp {
   planId: number
+}
+
+/* ============================================================
+ * 13. subscribe —— 微信订阅消息（fix-phase2-gaps / subscribe-message）
+ * ========================================================== */
+
+/**
+ * GET /api/subscribe/templates 出参：三个订阅事件的模板 ID。
+ * 值为空串表示后端未配置该事件的模板，前端申请授权时要先过滤掉。
+ */
+export interface SubscribeTemplates {
+  /** 被认领 */
+  claimed: string
+  /** 已送达 */
+  delivered: string
+  /** 待打卡提醒 */
+  checkinRemind: string
 }

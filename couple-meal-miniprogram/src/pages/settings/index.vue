@@ -12,6 +12,7 @@ import { resolveAsset } from '@/utils/asset'
 import { formatDate } from '@/utils/date'
 import { toast } from '@/utils/toast'
 import { onChooseAvatar } from '@/utils/wx-capabilities'
+import { isWxRemindOn, requestSubscribeConsent, setWxRemindOn } from '@/utils/subscribe'
 import type { AvatarUploadResp, CoupleInfo, CoupleSettingsReq, ProfileResp } from '@/types/api'
 import BottomSheet from '@/components/bottom-sheet.vue'
 
@@ -209,6 +210,26 @@ function onRemindChange(e: UniDetailEvent): void {
   void saveSettings({ remindEnabled: form.remindEnabled })
 }
 
+/**
+ * 微信消息提醒：本地开关（storage wx_remind_on），**与上面的 remindEnabled 无关**——
+ * 后者是关系级的「每日带饭提醒」，存 couple 表、由后端定时任务读；
+ * 这个开关只表示「我愿意收微信订阅消息」，打开时立刻申请一次授权（微信侧记账，后端下发时才用得上）。
+ */
+const wxRemindOn = ref(isWxRemindOn())
+
+async function onWxRemindChange(e: UniDetailEvent): Promise<void> {
+  const on = eventBool(e)
+  setWxRemindOn(on)
+  wxRemindOn.value = on
+  if (!on) return // 关掉后不再主动请求授权
+  const res = await requestSubscribeConsent()
+  if (res !== 'rejected') return
+  // 用户拒绝：开关回落关闭并提示一次，不反复弹窗（spec「用户开启开关即申请授权」）
+  setWxRemindOn(false)
+  wxRemindOn.value = false
+  toast('没开成微信提醒，想收提醒时再来开一次')
+}
+
 /** 关系级设置：成功后重取 couple/info 同步全局态（铁律：服务端状态不本地臆造） */
 async function saveSettings(data: CoupleSettingsReq, okText?: string): Promise<void> {
   try {
@@ -398,9 +419,17 @@ function clearDrafts(): void {
       <view class="field">
         <view class="label-col">
           <text class="label">🔔 每日带饭提醒</text>
-          <text class="desc">工作日 11:00 提醒「今天谁带饭呀」</text>
+          <text class="desc">工作日 11:00 提醒午饭、17:00 提醒晚饭</text>
         </view>
         <switch :checked="form.remindEnabled" color="#FF9B6A" @change="onRemindChange" />
+      </view>
+
+      <view class="field">
+        <view class="label-col">
+          <text class="label">💬 微信消息提醒</text>
+          <text class="desc">认领、送达、待打卡时微信通知你</text>
+        </view>
+        <switch :checked="wxRemindOn" color="#FF9B6A" @change="onWxRemindChange" />
       </view>
     </view>
 

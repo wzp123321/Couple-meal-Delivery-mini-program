@@ -13,6 +13,7 @@ import type {
   RpsCreateReq,
   RpsGameVO,
   RpsThrowReq,
+  SubscribeTemplates,
 } from '@/types/api'
 
 /** 额外选项，与 request.ts 的同名参数一一对应 */
@@ -128,4 +129,14 @@ export function getRps(gameId: number): Promise<RpsGameVO> {
 /** 取 (couple, date, meal_type) 进行中的对局，无则返回 null */
 export function currentRps(mealType: MealType, planDate: string): Promise<RpsGameVO | null> {
   return get<RpsGameVO | null>('/api/rps/current', { mealType, planDate })
+}
+
+/* ============================================================
+ * 订阅消息模板 ID（fix-phase2-gaps）：前端只拿 ID 去申请授权，
+ * 下发由后端在关键事件时完成。模板未配置时对应键为空串。
+ * ========================================================== */
+
+/** 取三个订阅事件（被认领 / 已送达 / 待打卡）的模板 ID */
+export function getSubscribeTemplates(): Promise<SubscribeTemplates> {
+  return get<SubscribeTemplates>('/api/subscribe/templates')
 }

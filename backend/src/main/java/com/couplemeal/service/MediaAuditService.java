@@ -33,4 +33,15 @@ public interface MediaAuditService {
      * @return 本轮成功回填 trace_id 的条数
      */
     int retryPendingAudit();
+
+    /**
+     * 兜底：把「已送审（有 trace_id）但创建超过 pending-timeout-minutes 仍停在审核中」的图片
+     * 置为屏蔽（audit_status=2），并重算所属打卡汇总态。
+     *
+     * <p>用于回调丢失（回调地址未配 / 网络丢包）的场景——否则图片会永久停在审核中、
+     * 永不展示且用户毫不知情。只处理 audit_status=0 的记录，绝不回退已通过 / 已屏蔽的图。
+     *
+     * @return 本轮实际由审核中改为屏蔽的条数
+     */
+    int expirePendingAudit();
 }

@@ -26,4 +26,11 @@ public interface MealCheckinImageMapper extends BaseMapper<MealCheckinImage> {
     @Select("DELETE FROM meal_checkin_image " +
             "WHERE checkin_id IN (SELECT id FROM meal_checkin WHERE user_id = #{userId})")
     int deleteImagesByUser(@Param("userId") Long userId);
+
+    /**
+     * 上传清理任务用：一次性取出全部图片相对路径（原图 + 缩略图），
+     * 与磁盘文件比对时放进 Set，避免逐文件查库（见 UploadCleanupJob）。
+     */
+    @Select("SELECT url FROM meal_checkin_image UNION SELECT thumb_url FROM meal_checkin_image")
+    List<String> selectAllImagePaths();
 }

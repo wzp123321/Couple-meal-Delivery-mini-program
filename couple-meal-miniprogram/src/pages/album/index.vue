@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // 饭桌相册（docs/design/60-打卡/前端.md §4）：一起吃的每顿饭，按月串成相册。
 // 两条硬规则来自设计：列表与卡片一律用 thumbUrl（320 长边），只有点开大图预览才取 url；
-// 未过审的图片后端根本不返回，前端不写「占位/屏蔽」判断，按 images 为空渲染成纯文字卡片。
+// 后端只回已过审图片，未过审的整条由 auditStatus 表达（0 审核中 / 1 通过 / 2 含屏蔽图），
+// 前端按它出角标——不给用户「照片上传失败/丢图」的错觉（fix-phase2-gaps 6.3）。
 import { computed, ref } from 'vue'
 import { onLoad, onPullDownRefresh, onReachBottom, onShow } from '@dcloudio/uni-app'
 import { get, post } from '@/utils/api'
@@ -61,14 +62,29 @@ const today = formatDate(new Date())
 
 /** 只有打卡当天能改（60-打卡/后端.md §3.5） */
 function isToday(item: GalleryItem): boolean {
-  return formatDate(item.createTime) === today
+  return formatDate(timeOf(item)) === today
 }
 
 /** 评分文本；未打分返回空串，模板里直接 v-if 掉 */
 function ratingText(rating: CheckinRating | null): string {
   if (rating === null) return ''
   const meta = RATING_META[rating]
-  return `${meta.emoji} ${meta.text}`
+  return meta ? `${meta.emoji} ${meta.text}` : ''
+}
+
+/** 后端 createTime 是 'yyyy-MM-ddTHH:mm:ss'，date 工具只认空格分隔，先归一 */
+function timeOf(item: GalleryItem): string {
+  return item.createTime.replace('T', ' ')
+}
+
+/** 审核态角标文案：1 通过（正常态）不出角标；其余未知值按审核中处理，不报错 */
+function auditTag(item: GalleryItem): string {
+  if (item.auditStatus === 1) return ''
+  return item.auditStatus === 2 ? '未通过' : '审核中'
+}
+
+function isRejected(item: GalleryItem): boolean {
+  return item.auditStatus === 2
 }
 
 function coverOf(item: GalleryItem): string {
@@ -79,8 +95,8 @@ function coverOf(item: GalleryItem): string {
 function mergeGroups(groups: GalleryGroup[]): void {
   groups.forEach((group) => {
     const hit = months.value.find((m) => m.month === group.month)
-    if (hit) hit.list.push(...group.list)
-    else months.value.push({ month: group.month, list: [...group.list] })
+    if (hit) hit.list.push(...group.cards)
+    else months.value.push({ month: group.month, list: [...group.cards] })
   })
 }
 
@@ -98,8 +114,8 @@ async function loadMore(): Promise<void> {
       cursor: cursor.value ?? undefined,
       size: PAGE_SIZE,
     })
-    mergeGroups(resp.list ?? [])
-    cursor.value = resp.cursor
+    mergeGroups(resp.months ?? [])
+    cursor.value = resp.nextCursor
     hasMore.value = resp.hasMore
   } catch {
     // 1002 已由 request 层 reLaunch 配对页；其余已 toast
@@ -117,9 +133,13 @@ function refresh(): void {
   void loadMore()
 }
 
-/** 点卡片：有照片才进大图预览，用的是原图 url */
+/** 点卡片：有照片才进大图预览，用的是原图 url；一张可看的都没有时把审核态说清楚 */
 function onPreview(item: GalleryItem): void {
-  if (item.images.length === 0) return
+  if (item.images.length === 0) {
+    if (isRejected(item)) toast('照片没过审，重新打卡换一张吧')
+    else if (item.auditStatus !== 1) toast('照片还在审核中，过审后就出现啦')
+    return
+  }
   uni.previewImage({
     current: resolveAsset(item.images[0].url),
     urls: item.images.map((img) => resolveAsset(img.url)),
@@ -128,7 +148,7 @@ function onPreview(item: GalleryItem): void {
 
 function openEdit(item: GalleryItem): void {
   editTarget.value = item
-  editRating.value = item.rating ?? 3
+  editRating.value = item.rating && item.rating >= 1 ? item.rating : 3
   editContent.value = item.content ?? ''
   editVisible.value = true
 }
@@ -219,14 +239,18 @@ onPullDownRefresh(() => {
           <view v-for="item in month.list" :key="item.checkinId" class="gcard" @tap="onPreview(item)">
             <image v-if="coverOf(item)" class="gphoto" :src="coverOf(item)" mode="aspectFill" />
             <view v-else class="gphoto gphoto-none">🍽</view>
+            <text v-if="auditTag(item)" class="gaudit" :class="{ bad: isRejected(item) }">
+              {{ auditTag(item) }}
+            </text>
             <text v-if="item.images.length > 1" class="gcount">{{ item.images.length }} 张</text>
 
             <view class="gbody">
-              <text class="gdate">{{ formatDate(item.planDate, 'MM-dd') }}</text>
+              <text class="gdate">{{ formatDate(timeOf(item), 'MM-dd') }}</text>
+              <text v-if="isRejected(item)" class="gtip">照片没过审，重新打卡换一张吧</text>
               <text v-if="ratingText(item.rating)" class="grate">{{ ratingText(item.rating) }}</text>
               <text v-if="item.content" class="gtxt">{{ item.content }}</text>
               <text v-if="item.reply" class="greply">💬 回应：{{ item.reply }}</text>
-              <text class="gauthor">{{ item.authorNickname }} 打卡</text>
+              <text class="gauthor">{{ item.mine ? '我' : 'TA' }} 打卡</text>
 
               <view class="gops">
                 <text v-if="isToday(item)" class="gop" @tap.stop="openEdit(item)">改评价</text>
@@ -377,6 +401,27 @@ onPullDownRefresh(() => {
   background: rgba(74, 63, 53, 0.5);
   color: #fff;
   font-size: 20rpx;
+}
+.gaudit {
+  position: absolute;
+  top: 16rpx;
+  left: 16rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 999rpx;
+  background: #fff0e2;
+  color: #ff9b6a;
+  font-size: 20rpx;
+  font-weight: 700;
+}
+.gaudit.bad {
+  background: #efe9e3;
+  color: var(--ink-2);
+}
+.gtip {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: var(--orange);
+  line-height: 1.5;
 }
 .gbody {
   padding: 16rpx 20rpx 20rpx;

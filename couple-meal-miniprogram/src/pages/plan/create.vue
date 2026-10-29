@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 2.3 发起约定页 —— 20-约定/前端.md §2。
 // 双角色共用一个表单，差异只在 source（0 我想吃 → 点餐让别人带 / 1 我带饭 → 主动带）。
-// 三条硬规则：日期只给 [today, today+7] 内的工作日且 18:00 后锁当日；菜品 1–10 道；
+// 三条硬规则：日期只给 [today, today+7] 内的工作日且按餐段锁当日（午饭 11:00 / 晚饭 18:00）；菜品 1–10 道；
 // 忌口只提醒不硬拦（PRD §9 Q2）—— 弹 L3 强提醒后用户确认仍照常提交。
 import { computed, ref } from 'vue'
 import { onHide, onLoad, onShow } from '@dcloudio/uni-app'
@@ -10,6 +10,7 @@ import BottomSheet from '@/components/bottom-sheet.vue'
 import { formatDate } from '@/utils/date'
 import { appState } from '@/stores/app'
 import { toast } from '@/utils/toast'
+import { isWxRemindOn, requestSubscribeConsent } from '@/utils/subscribe'
 import type {
   AvoidLevel,
   MealType,
@@ -25,7 +26,8 @@ import type {
 const MAX_DISHES = 10
 const MAX_NAME = 20
 const MAX_REMARK = 100
-const LATE_HOUR = 18 // 工作日 18:00 后不可发起当日（PRD §12.6）
+/** 发起截止小时按餐段取：午饭 11:00 / 晚饭 18:00（与后端 plan.cutoff.* 一致，PRD §12.6） */
+const CUTOFF_HOUR: Record<MealType, number> = { 1: 11, 2: 18 }
 const DATE_RANGE = 7 // [today, today+7]
 const DRAFT_KEY = 'draft:plan-create' // 前端.md §2 指定的草稿键
 const WEEK_LABELS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
@@ -72,7 +74,7 @@ const source = ref<PlanSource>(0)
 const planDate = ref('')
 const dishes = ref<DishDraft[]>([])
 const remark = ref('')
-const mealType = ref<MealType>(1) // 默认午饭（PRD §9 Q3），晚饭二期可切换
+const mealType = ref<MealType>(1) // 默认午饭（PRD §9 Q3），可切晚饭
 const submitting = ref(false)
 
 const isOrderer = computed(() => source.value === 0)
@@ -80,13 +82,16 @@ const partnerName = computed(
   () => appState.relation?.nicknameMine || appState.relation?.partnerNickname || 'TA',
 )
 
-/* ---------------- 可选日期：工作日 + 可约范围 + 18:00 规则 ---------------- */
+/* ---------------- 可选日期：工作日 + 可约范围 + 按餐段截止 ---------------- */
 const dateOptions = ref<DateOption[]>([])
+
+/** 当前餐段的发起截止小时 */
+const cutoffHour = computed(() => CUTOFF_HOUR[mealType.value])
 
 function buildDateOptions(): DateOption[] {
   const now = new Date()
   const todayStr = formatDate(now)
-  const late = now.getHours() >= LATE_HOUR
+  const late = now.getHours() >= cutoffHour.value
   const out: DateOption[] = []
 
   for (let i = 0; i <= DATE_RANGE; i++) {
@@ -107,14 +112,16 @@ function buildDateOptions(): DateOption[] {
       label: date === todayStr ? '今天' : WEEK_LABELS[day],
       sub,
       disabled: tooLate,
-      reason: tooLate ? '今天太晚了，约明天吧' : '',
+      reason: tooLate ? `今天${mealType.value === 1 ? '午饭' : '晚饭'}约不了啦，约明天吧` : '',
     })
   }
   return out
 }
 
 /** 日期条常驻说明：把「为什么有些日子不能选」讲清楚（PRD §12.3 内联校验） */
-const dateHint = '只能约工作日；工作日 18:00 后当天就约不了啦'
+const dateHint = computed(
+  () => `只能约工作日；工作日 ${cutoffHour.value}:00 后当天就约不了啦`,
+)
 
 /** 首个可选工作日作为默认值；全被锁时用第一个可用项兜底 */
 function firstSelectable(): string {
@@ -128,6 +135,15 @@ function onPickDate(o: DateOption): void {
     return
   }
   planDate.value = o.date
+}
+
+/** 切换餐段：截止小时随之变化，需重算可选日期并校正已选日期 */
+function onMealChange(mt: MealType): void {
+  if (mealType.value === mt) return
+  mealType.value = mt
+  dateOptions.value = buildDateOptions()
+  const cur = dateOptions.value.find((o) => o.date === planDate.value)
+  if (!cur || cur.disabled) planDate.value = firstSelectable()
 }
 
 /* ---------------- 菜品：菜单弹层多选 + 手输 ---------------- */
@@ -275,7 +291,7 @@ function applyDraft(): void {
   if (!draft) return
   dishes.value = draft.dishes
   remark.value = draft.remark
-  // 草稿里的日期可能已过期或被 18:00 规则锁掉，先校正再回填
+  // 草稿里的日期可能已过期或被当前餐段的截止规则锁掉，先校正再回填
   const stillOk = dateOptions.value.some((o) => o.date === draft.planDate && !o.disabled)
   planDate.value = stillOk ? draft.planDate : firstSelectable()
   restoreVisible.value = false
@@ -324,6 +340,8 @@ async function doCreate(): Promise<void> {
   try {
     const resp = await post<PlanCreateResp>('/api/plan/create', buildBody())
     clearDraft() // 不清会导致下次进页反复提示恢复
+    // 创建成功顺手补一次订阅授权（开关开着才做），失败不影响下面的结果展示
+    if (isWxRemindOn()) void requestSubscribeConsent()
     if (resp.warnings && resp.warnings.length > 0) {
       // 后端不硬拦（只回 warnings），这里同样只提示：发出后告知，用户再决定怎么处理
       createdId.value = resp.planId
@@ -333,8 +351,14 @@ async function doCreate(): Promise<void> {
     }
     toast(isOrderer.value ? '发出去啦，等 TA 来带' : '告诉 TA 啦，等 TA 收下')
     gotoDetail(resp.planId)
-  } catch {
+  } catch (e) {
     saveDraft() // 失败保留全部输入（PRD §12.7）
+    // 后端按餐段判定已过发起截止（1010）：前端可能因设备时钟偏差放过，重算日期条并校正已选日期
+    if ((e as { code?: number } | null)?.code === 1010) {
+      dateOptions.value = buildDateOptions()
+      const cur = dateOptions.value.find((o) => o.date === planDate.value)
+      if (!cur || cur.disabled) planDate.value = firstSelectable()
+    }
   } finally {
     submitting.value = false
   }
@@ -373,7 +397,7 @@ onLoad((query) => {
   readDraft()
 })
 
-// 从菜单页 / 后台切回：时间可能已越过 18:00，重算可用日期
+// 从菜单页 / 后台切回：时间可能已越过当前餐段的截止点，重算可用日期
 onShow(() => {
   if (!dateOptions.value.length) return
   const next = buildDateOptions()
@@ -458,8 +482,8 @@ onHide(() => {
     <view class="card block">
       <text class="label">时段</text>
       <view class="seg">
-        <view class="seg-item" :class="{ on: mealType === 1 }" @tap="mealType = 1">🍱 午饭</view>
-        <view class="seg-item" :class="{ on: mealType === 2 }" @tap="mealType = 2">🌙 晚饭</view>
+        <view class="seg-item" :class="{ on: mealType === 1 }" @tap="onMealChange(1)">🍱 午饭</view>
+        <view class="seg-item" :class="{ on: mealType === 2 }" @tap="onMealChange(2)">🌙 晚饭</view>
       </view>
     </view>
 

@@ -8,6 +8,7 @@ import { get, post } from '@/utils/api'
 import { appState, applyCoupleInfo } from '@/stores/app'
 import { resolveAsset } from '@/utils/asset'
 import { toast } from '@/utils/toast'
+import { isWxRemindOn, requestSubscribeConsent } from '@/utils/subscribe'
 import type { PlanBrief, PlanStatus, PlanTodayResp, CoupleInfo } from '@/types/api'
 
 /* ---------------- 状态标签：七档全覆盖（Record<PlanStatus,...> 少了档位会编译报错） ---------------- */
@@ -157,6 +158,8 @@ async function onClaim(p: PlanBrief): Promise<void> {
   loading.value = true
   try {
     await post(`/api/plan/${p.id}/claim`, {})
+    // 认领成功顺手补一次订阅授权（开关开着才做），为后续「已送达 / 待打卡」通知攒配额
+    if (isWxRemindOn()) void requestSubscribeConsent()
     toast('接下来交给你啦')
   } catch {
     // 1004/1005 等文案由 request.ts 统一 toast
