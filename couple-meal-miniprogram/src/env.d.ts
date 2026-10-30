@@ -1,6 +1,10 @@
 /// <reference types="vite/client" />
 /// <reference types="@dcloudio/types" />
 
+// 微信小程序全局对象。@dcloudio/types 不导出它，仅在 `#ifdef MP-WEIXIN` 分支使用，
+// 故按 any 声明，避免 privacy.ts 的类型检查报 TS2304。
+declare const wx: any
+
 interface ImportMetaEnv {
   readonly VITE_API_BASE: string
 }

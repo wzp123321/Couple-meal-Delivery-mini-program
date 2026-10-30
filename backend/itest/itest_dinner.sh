@@ -31,7 +31,9 @@ chk() {
 }
 
 TA=$(genjwt 10011); TB=$(genjwt 10012)
-TOM=$(date -d "+1 day" +%Y-%m-%d 2>/dev/null || date -v+1d +%Y-%m-%d)
+# 目标日期必须是工作日：明天若撞上周六/周日，晚饭约定会被 1009(只能约工作日) 拦下。
+# 从 +1 天起往后找第一个工作日。
+TOM=""; for i in $(seq 1 7); do d=$(date -d "+$i days" +%Y-%m-%d); if [ "$(date -d "$d" +%u)" -le 5 ]; then TOM=$d; break; fi; done
 TODAY=$(date +%Y-%m-%d)
 HOUR=$(date +%H)
 echo "===== 晚市定向验证 (TODAY=$TODAY HOUR=$HOUR TOM=$TOM) ====="

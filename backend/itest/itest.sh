@@ -60,7 +60,9 @@ TA=$(genjwt 10001); TB=$(genjwt 10002); TC=$(genjwt 10003)
 TODAY=$(date +%Y-%m-%d)
 HOUR=$(date +%H)
 if [ "$HOUR" -ge 11 ]; then CREATE_DATE=$(date -d "+1 day" +%Y-%m-%d); else CREATE_DATE=$TODAY; fi
-FAR=$(date -d "+8 days" +%Y-%m-%d)     # 超 7 天上限
+# 超 7 天上限的样本日期：必须落在工作日，否则会先被 1009(只能约工作日) 拦下，
+# 拿不到 1011。从 +8 天起往后找第一个工作日。
+FAR=""; for i in $(seq 8 20); do d=$(date -d "+$i days" +%Y-%m-%d); dow=$(date -d "$d" +%u); if [ "$dow" -le 5 ]; then FAR=$d; break; fi; done
 # 取一个周六作为非工作日：从今天往后找第一个周六
 SAT=""; for i in $(seq 1 10); do d=$(date -d "+$i days" +%Y-%m-%d); dow=$(date -d "$d" +%u); if [ "$dow" = "6" ]; then SAT=$d; break; fi; done
 
@@ -210,6 +212,7 @@ UP=$(curl -s -m15 -H "Authorization: Bearer $TA" -F "file=@$TEST_PNG;type=image/
 check "A 上传打卡图" 0 "$UP"
 UPURL=$(echo "$UP" | grep -o '"url":"[^"]*"' | head -1 | sed 's/"url":"//;s/"//')
 echo "  upload url=$UPURL"
+CID=0   # 窗口外走 SKIP 分支时后面的 ID 推导仍需它，否则 set -u 直接中断整轮
 HOUR_NOW=$(date +%H)
 if [ "$HOUR_NOW" -ge 10 ] || [ "$HOUR_NOW" -lt 2 ]; then
 SUB=$(jcall POST /checkin/submit "$TA" "{\"planId\":$PID1,\"images\":[\"$UPURL\"],\"rating\":3,\"content\":\"今天超香\"}")
