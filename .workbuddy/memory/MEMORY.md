@@ -87,3 +87,11 @@ status 枚举 0待认领 1待接收 2备餐中 3已交付 4已完成 5已取消 
 - 版本号只在文件头出现一次；正文与跨文档引用只写「文件名 + 章节号」
 - 同一规则只定义一处，别处单向引用
 - 已落地位置：`AGENT.md §3「写文档的规矩」`、`CLAUDE.md「工作方式」`
+
+## 一键验收（2026-10-30 落地）
+- `bash scripts/verify.sh`：预检 → mvn package → 起后端 → 两组 itest → 契约对拍 → 前端 type-check + build → 汇总表/退出码
+- **分两组起两次后端**：remind / audit 用例需 `daily-remind-cron` / `daily-remind-dinner-cron` / `audit-pending-expire-cron` 全为 `*/5 * * * * *` + `audit.pending-timeout-minutes=1`
+- 基线：103 断言全绿（主链路 44 或窗口内 50 / 晚市 4 / rps 25 / subscribe 4 / remind 14 / audit 12）
+- 契约对拍 `node scripts/contract-check.mjs`：前端 `/api` 调用 ↔ 后端路由、`pages.json` ↔ 页面文件；动态尾段只提示需人工
+- 判「8080 是否被占」必须 `curl --noproxy '*'`（走代理时没后端是 502 不是 000）
+- 写 `.md` 必须「node 算内容 + bash 重定向」；Write/Edit 直写会被 E-SafeNet 写成半密文（配方见 2026-10-30.md）
