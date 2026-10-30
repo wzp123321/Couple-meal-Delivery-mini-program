@@ -1,0 +1,4 @@
+# 本机 core.autocrlf=true，克隆后会把文本转成 CRLF；
+# bash 脚本带 \r 会报 "$'\r': command not found"，故强制 LF。
+*.sh   text eol=lf
+*.mjs  text eol=lf
