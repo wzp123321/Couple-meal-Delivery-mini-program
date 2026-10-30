@@ -9,7 +9,7 @@
 | 顺序 | 文件 | 用途 |
 |---|---|---|
 | 1 | `AGENT.md` | 流程与硬规则（必读） |
-| 2 | `openspec/changes/bootstrap-mvp/` | **当前变更的规格契约**（proposal / specs / design / tasks） |
+| 2 | `openspec/specs/` | **已归档的行为契约**（12 个能力：MVP 9 + phase-2 3）；改行为前先读对应能力 |
 | 3 | `docs/产品需求文档.md` | 产品背景与细节（14 章） |
 | 4 | `docs/design/README.md` | 设计导航：按任务查该读哪几份（**按模块读，禁止全量读**） |
 | 5 | `docs/design/00-全局约定.md` + 该需求目录下**一份**文档 | 全局约定（D1–D16 / 分层 / 鉴权 / 错误码）+ `后端.md`（表·接口·实现）或 `前端.md`（页面·交互·状态） |
@@ -18,7 +18,7 @@
 | 8 | `docs/ui-prototype-cream.html` | 视觉与交互基线（18 屏 + 9 弹层） |
 | 9 | `docs/部署与运维.md` | 服务器规格 / Nginx / systemd / 备份 / 上线检查清单（**仅部署排障时读**） |
 
-**当前状态：需求与交互冻结，OpenSpec 规格已就绪（4/4 产物、validate 通过），尚未写任何业务代码。**
+**当前状态：MVP 与 phase-2 已全部落地并归档；机械层验收跑 `bash scripts/verify.sh`；真机联调未做（appid 仍是 `touristappid`）。**
 
 > 开发流程走 **OpenSpec**（`spec-driven`）：`proposal → specs → design → tasks → apply → archive`。
 > 没有 spec 描述的行为不实现；只做 tasks 里列出的事；归档前 tasks 必须全勾。
@@ -50,25 +50,26 @@
 - **文档只写最新结论**：不留版本变更史 / 修订记录，旧结论直接删；版本号只在文件头出现一次，正文引用别处只写「文件名 + 章节号」。
 - **不擅自扩范围**：不新增未被要求的功能、不顺手重构、不替人做决定。
 - **不确定就问**：歧义处停下来问，不要用「合理猜测」推进关键决策。
+- **验收跑脚本，不手搓**：`bash scripts/verify.sh` 一条命令跑完后端构建 / 两组 itest / 契约对拍 / 前端类型检查与构建。结论按 AGENT.md §10.2 分层说，**别把「可编译」说成「已联调通过」**。
 
 ## 目录约定
 
 ```
 openspec/                    OpenSpec 规格与变更（设计 → 开发 → 验收）
   ├── config.yaml            schema: spec-driven，语言 zh-CN
-  ├── specs/                 已归档的行为契约（验收标准）
-  └── changes/
-      └── bootstrap-mvp/     当前变更
-          ├── proposal.md    Why / What / Capabilities / Impact
-          ├── specs/<cap>/spec.md  9 个能力，Requirement + Scenario
-          ├── design.md      Context / Goals / Decisions / Risks
-          └── tasks.md       9 个任务组，勾选即进度
+  ├── specs/                 已归档的行为契约，12 个能力（验收标准）
+  └── changes/               进行中的变更（archive/ 下是历史归档）
+      └── <name>/            proposal / specs / design / tasks 四件套
 docs/                        产品与技术文档（交付物）
   ├── 产品需求文档.md         产品背景与细节
   ├── 开发前准备与详细设计.md
   ├── 部署与运维.md           从空服务器到上线 + 排障
   ├── design/                 设计文档：1 个需求 1 个目录，内含 后端.md / 前端.md
   └── ui-prototype-cream.html
+backend/                     Spring Boot 单体（含 itest/ 集成自测脚本）
+couple-meal-miniprogram/     uni-app 前端（编译目标 mp-weixin）
+scripts/                     verify.sh（一键验收）+ contract-check.mjs（契约对拍）
+db/schema.sql                建表脚本（字段级唯一真相源）
 .workbuddy/
   ├── memory/               项目决策记忆（防漂移，非交付物）
   └── runs/<task_id>/       多智能体流程产物（handoff / 各阶段文档）
@@ -79,21 +80,20 @@ CLAUDE.md                   本文件（精简入口）
 ## 常用命令
 
 ```bash
-# 看当前变更进度与解锁到哪一步
-openspec status --change bootstrap-mvp
+# 一键验收：后端构建 → 起后端 → 两组 itest → 契约对拍 → 前端类型检查/构建
+bash scripts/verify.sh
+bash scripts/verify.sh --no-build --no-frontend   # 只跑后端用例，复用已有 jar
 
-# 取某阶段的工作指令（proposal / specs / design / tasks / apply / archive）
-openspec instructions specs --change bootstrap-mvp
+# 契约对拍单独跑（前端 /api 调用 ↔ 后端路由、pages.json ↔ 页面文件）
+node scripts/contract-check.mjs
 
-# 严格校验（不许加 --no-validate）
-openspec validate bootstrap-mvp --strict
-
-# 查看能力规格或变更全文
-openspec show bootstrap-mvp
+# 查看已归档的能力规格
 openspec list --specs
+openspec show <capability>
 
-# 验收完成、tasks 全勾后归档
-openspec archive bootstrap-mvp
+# 新变更：规划 → 取指令 → 校验 → 归档
+openspec new change <name>
+openspec instructions apply --change <name>
+openspec validate <name> --strict      # 不许加 --no-validate
+openspec archive <name> --yes          # tasks 全勾后才归档
 ```
-
-> 工程尚未创建。骨架落地后在此补充：启动、建表、测试、lint 的命令。

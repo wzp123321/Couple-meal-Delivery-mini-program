@@ -22,15 +22,16 @@
 
 ## 2. 当前阶段
 
-**需求与交互已冻结，规格已就绪，尚未写一行代码。**
+**MVP 与 phase-2 已全部落地并归档，当前不写新功能，处在「真机联调 + 上线准备」。**
 
 | 维度 | 状态 |
 |---|---|
 | 产品 | PRD 已冻结，无未决项（Q1–Q6 全闭合） |
 | 交互 | 高保真可交互原型：18 屏 + 9 弹层，可直接点击 |
 | 技术 | `docs/design/` 按**需求**拆分：9 个需求目录（每个内含 `后端.md` + `前端.md`）+ 4 份公共文档，`db/schema.sql` 可直接执行 |
-| 规格 | OpenSpec 变更 `bootstrap-mvp`：proposal / 9 个 capability specs / design / tasks 全部完成，`validate --strict` 通过 |
-| 代码 | **无**。仓库目前只有 `docs/`、`db/`、`openspec/` 与 `.workbuddy/` |
+| 规格 | `openspec/specs/` 已落 **12 个能力**（MVP 9 + phase-2 3），`validate --strict` 通过 |
+| 代码 | 后端 15 个 Controller / 前端 15 个页面，MVP + phase-2 全量实现 |
+| 验收 | 机械层：`bash scripts/verify.sh`（见 §10）。**真机运行未验证**——appid 仍是 `touristappid`，登录拿不到 openid |
 
 ---
 
@@ -137,7 +138,7 @@ D:/workspace/private/collect/vue-plugins-components-collect/knowledge/multi-agen
 | 3 | 详细设计 | 并行 | 03 / 04 | `frontend-design.md` / `backend-design.md` | 符合契约 |
 | 4 | 设计评审 | 串行 | 06 评审官 | `design-review-report.md` | GATE-2 人确认 |
 | 5 | 开发实现 | 并行→联调 | 07 开发 | 代码 + 契约测试 + 联调对拍 | GATE-3 自测通过 |
-| 6 | 验收自测 | 分层串行 | 08a 契约层 → 08b UI 层 | `acceptance-report.md` | GATE-4 人确认 |
+| 6 | 验收自测 | 分层串行 | 08a 契约层 → **08c 契约守门** → 08b UI 层 | `acceptance-report.md` | GATE-4 人确认 |
 
 ### 4.3 产物落地
 
@@ -182,6 +183,7 @@ Agent 只读自己 `context_budget` 里的东西，**编排者不得转发全量
 | 06 评审官 | 契约 + 双端设计 + rubric | 需求原始讨论 |
 | 07 开发 | **LOCKED 契约** + 自己那侧的设计文档 | 对侧设计细节 |
 | 08 验收 | 契约 + AC + 可运行产物 | 设计推演过程 |
+| 08c 契约守门 | LOCKED 契约（`后端.md §2`） + `前端.md` 的页面→接口映射 + `src/types/api.ts` + 真实响应 | 实现代码 |
 
 ---
 
@@ -200,6 +202,31 @@ Agent 只读自己 `context_budget` 里的东西，**编排者不得转发全量
 
 - **S 档**：只走 OpenSpec（`proposal` + `specs` + `tasks` → apply → archive），不启用多 Agent 分工。
 - **M / L 档**：启用多 Agent 分工，但所有阶段的结论 MUST 收敛回 OpenSpec 四件套，不允许只在 `.workbuddy/runs/` 里存在。
+
+### 4.7 契约守门（08c）：08a 与 08b 之间必须补的一层
+
+**为什么有这一层**：08a 只看后端接口自身对不对，08b 只看界面行为与状态渲染，**两者都不管「前端读的字段名是否等于后端返回的字段名」**。这类缺口在两端各自的自测里都是绿的，到真机上是静默空白——列表永远为空、爱心值永远 0、控制台不报错。本项目踩过一次：相册页读 `resp.list` / `resp.cursor`，后端实际返回 `months[]` / `nextCursor` / `hasMore`，接口 200、页面空白。
+
+**08c 判定不合规 → 直接记 BLOCKER，不进入 08b。**
+
+**机械部分**（脚本，随 `bash scripts/verify.sh` 自动跑）
+
+| 检查 | 判据 | 失败含义 |
+|---|---|---|
+| 前端调用 → 后端路由 | `src/` 里每个 `/api/...` 都有同形状后端路由 | 必然 404 |
+| 后端路由 → 前端调用 | 只提示，不判失败 | 微信回调 / 预留 / 真没接 |
+| `pages.json` ↔ 页面文件 | 双向一一对应 | 注册了不存在的页 / 新页忘注册 → 白屏 |
+
+动态尾段（如 `/api/plan/${id}/${action}`）脚本无法静态确认，会打 `!` 提示，**必须人工核对**。
+
+**手工部分**（脚本查不出，结论必须贴进验收记录）
+
+1. 用 dev JWT 打一次真实接口，把**响应顶层 key 原样抄成一行**放进报告。
+2. 打开该页面的 `前端.md`「页面 → 接口」映射与 `src/types/api.ts`，逐字段对照：前端写 `resp.x` 的每个 x 必须在响应里存在。
+3. 列表类响应必须确认真实容器名（`list` / `items` / `months` / `cards` 各家不同），**不许按「一般是 list」写代码**。
+4. 嵌套结构至少验两层（如 `months[].cards[].images[]`）。
+
+> 判据一句话：**接口返回的每个字段，前端要么用到、要么明确忽略；前端读的每个字段，接口必须真的返回。**
 
 ---
 
@@ -263,18 +290,65 @@ Agent 只读自己 `context_budget` 里的东西，**编排者不得转发全量
 
 ---
 
-## 9. 下一步（等人点头）
+## 9. 下一步
 
-已建立变更 `bootstrap-mvp`，规划四件套完成（4/4，`validate --strict` 通过），**尚未开始编码**。
+代码侧已无待写功能，剩下的都是**需要外部条件才能推进**的事：
 
-| 顺序 | 任务 | 入口 | 档位 |
-|---|---|---|---|
-| 1 | 原型评审：逐屏核对布局 / 文案是否要改 | 人看 `docs/ui-prototype-cream.html` | — |
-| 2 | 规划确认：审 `openspec/changes/bootstrap-mvp/` 四件套，尤其 `specs/` 的 Scenario 是否就是想要的验收标准 | `openspec show bootstrap-mvp` | — |
-| 3 | 开工 M0：按 `tasks.md` 第 1 组建工程与表 | `openspec instructions apply --change bootstrap-mvp` | M |
-| 4 | 全量落地：tasks 第 2–8 组 | 同上 | L |
-| 5 | 验收归档：`validate --strict` → `archive` | 见 §4.0 | — |
+| 顺序 | 任务 | 卡点 |
+|---|---|---|
+| 1 | 真机联调：登录换 openid、打卡拍照上传、订阅授权弹窗 | `manifest.json` 的 appid 仍是 `touristappid`，且 `AuthServiceImpl.login()` 无 dev 兜底 → 游客身份登录不了 |
+| 2 | 公众平台配置订阅消息模板 id | 需真实 appid（未配置时前端优雅跳过，不报错） |
+| 3 | 打通 `mediaCheckAsync` 审核回调 | 需外网可达的 HTTPS 域名并备案 |
+| 4 | 上线前检查 | 按 `docs/部署与运维.md` 的检查清单走 |
 
-> **未经用户明确指示，不要跳到编码阶段。** 当前停在「需求与交互冻结 + 规格已就绪、待评审」。
+> 开新功能前先跑 `bash scripts/verify.sh` 确认基线全绿；改行为必须先开 OpenSpec change（§4.0 硬规则 9）。
 
-> 规划变更若需调整（例如新增能力、改 Scenario），走 `openspec validate` 前后的正常修改，不要绕过，也不要在 apply 阶段偷偷改 spec。
+---
+
+## 10. 本地跑测（唯一机械判据）
+
+```bash
+bash scripts/verify.sh                 # 全量：构建 → 起后端 → 两组 itest → 契约对拍 → 前端类型检查 + 构建
+bash scripts/verify.sh --no-build      # 复用已有 jar
+bash scripts/verify.sh --no-frontend   # 只验后端
+bash scripts/verify.sh --only=itest_rps
+bash scripts/verify.sh --reuse         # 8080 已有服务则复用（默认拒绝）
+```
+
+日志落在 `backend/target/verify/`：`backend.log` / `backend-b.log` / `itest*.log` / `contract.log` / `type-check.log` / `build-fe.log`。
+
+**为什么分两组起两次后端**：`itest_remind.sh` 与 `itest_audit.sh` 验的是定时任务，必须把 cron 调成每 5 秒、审核超时压到 1 分钟，否则要等到 11:00 / 17:00 / 次日 03:50。脚本自动带这些参数重启，不用手工准备。
+
+### 10.1 为什么必须用脚本，不能手动一条条跑
+
+| 坑 | 现象 | 脚本怎么处理 |
+|---|---|---|
+| 端口被注入 | JVM 环境把 `server.port` 注入成 `57230`，`java -jar` 绑错端口，测试全 502 | 强制 `--server.port=8080` |
+| 进程被回收 | 后台起的后端在本轮 bash 结束即消失，下一轮 curl 全是「积极拒绝」 | 起服务 / 等健康 / 跑测在同一进程内一次完成 |
+| 残留旧进程 | 8080 上还跑着旧 class，新代码不生效，整轮假失败 | 检测到端口在用就**拒绝**，必须显式 `--reuse` |
+| 长命令被截断 | 前台长命令被 SIGTERM，输出全丢 | 各步输出落日志，由脚本汇总 |
+| 用例依赖日期/时段 | 打卡用例只在 10:00–次日 02:00 能跑；「超 7 天」「明天」这类样本日期撞上周末就必挂 | 样本日期改为「往后找第一个工作日」；窗口外用例自己 SKIP，**不再中断整轮** |
+
+### 10.2 结论怎么说话（重要）
+
+脚本能证明的只有两层，**不要讲成三层**：
+
+| 层 | 由谁证明 | 可以说什么 |
+|---|---|---|
+| 后端接口行为 | `itest/*.sh` | 「接口行为符合 specs」 |
+| 前端可编译 | `vue-tsc` + `build:mp-weixin` | 「类型与构建通过」 |
+| 前端运行 / 真机 | **只由开发者工具或真机证明** | 没跑过就只能说「未验证」 |
+
+**禁止**在只跑过 `verify.sh` 的情况下写「已全部联调通过」。正确写法：
+
+> 后端 6 组 itest 全绿，前端 type-check 与构建通过，契约对拍无不一致；**真机未验证**（登录换 openid / 打卡拍照上传 / 订阅授权弹窗 / 审核回调）。
+
+### 10.3 失败定位
+
+| 失败项 | 先看 |
+|---|---|
+| 环境预检 | MySQL 是否在跑、`couple_meal` 库是否已用 `db/schema.sql` 建好 |
+| 启动后端 | `backend/target/verify/backend.log` 尾部（连接拒 = 库没起） |
+| 单个 itest | 对应日志里的 `FAIL:` 行；`无统计输出` = 脚本自身报错，看尾部 `unbound variable` 一类 |
+| 契约对拍 | `contract.log` 的 `✗` 行（`!` 只是提示，需人工判断） |
+| 前端 | `type-check.log` / `build-fe.log` |
